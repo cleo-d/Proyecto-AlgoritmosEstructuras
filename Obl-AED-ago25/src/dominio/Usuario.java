@@ -1,0 +1,58 @@
+package dominio;
+
+public class Usuario implements Comparable<Usuario> {
+
+    private String cedula;
+    private String nombre;
+
+    public Usuario(String unaCedula, String unNombre) {
+        this.setCedula(unaCedula);
+        this.setNombre(unNombre);
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @Override
+    public String toString() {
+        return this.getNombre() + "#" + this.getCedula();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Usuario)) {
+            return false;
+        }
+        Usuario otro = (Usuario) o;
+        if (this.cedula == null || otro.cedula == null) {
+            return false;
+        }
+        return this.cedula.equals(otro.cedula);
+    }
+
+    //VERIFICAR SI ESTA BIEN ESTE COMPARE TO
+    @Override
+    public int compareTo(Usuario o) {
+        return this.nombre.compareToIgnoreCase(o.nombre);
+    }
+
+    public boolean validarCedula(String cedula) {
+        return cedula != null && cedula.length() == 8;
+    }
+}
