@@ -156,7 +156,7 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno obtenerUsuario(String cedula) {
-        
+
         if (cedula == null || cedula.trim().isEmpty()) {
             return Retorno.error1();
         }
@@ -208,7 +208,72 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno informaciónMapa(String[][] mapa) {
-        return Retorno.noImplementada();
+        int filaMax = 0;
+        int maxColumna = 0;
+        String resultadoParcial = "";
+        int consecutiva = 0;
+
+        //TRABAJO CON LAS FILAS
+        for (int i = 0; i < mapa.length; i++) {
+            int countFila = 0;
+            //System.out.println("trabajo con i: " + i);
+
+            //Aca recorro cada posicion dentro de la fila
+            for (int j = 0; j < mapa[i].length; j++) {
+                //System.out.println("trabajo con j: " + j);
+                if (!mapa[i][j].equals("o")) {
+                    countFila++;
+                    consecutiva++;
+                    //System.out.println("countFila: "+ countFila);
+                }
+            }
+
+            if (countFila > filaMax) {
+                filaMax = countFila;
+            }
+        }
+
+        //TRABAJO CON LAS COLUMNAS
+        int colAnterior = 0;
+        int consecutivas = 1;
+        boolean existeAscendencia = false;
+
+        for (int j = 0; j < mapa[0].length; j++) {
+            int countCol = 0;
+            for (int i = 0; i < mapa.length; i++) {
+                if (!mapa[i][j].equals("o")) {
+                    countCol++;
+                }
+            }
+
+            //Reviso por ascendencia
+            if (colAnterior == countCol - 1) {
+                consecutivas++;
+                if (consecutivas >= 3) {
+                    existeAscendencia = true;
+                }
+            } else {
+                consecutivas = 1;
+            }
+            colAnterior = countCol;
+            if (countCol > maxColumna) {
+                maxColumna = countCol;
+            }
+        }
+
+        if (filaMax > maxColumna) {
+            resultadoParcial += filaMax + "#" + "fila" + "|";
+        } else if (maxColumna > filaMax) {
+            resultadoParcial += maxColumna + "#" + "columna" + "|";
+        } else {
+            resultadoParcial += maxColumna + "#" + "ambas" + "|";
+        }
+
+        resultadoParcial += existeAscendencia ? "existe" : "no existe";
+
+
+        Retorno r = new Retorno(Retorno.Resultado.OK, resultadoParcial);
+        return r;
     }
 
     @Override
@@ -236,20 +301,11 @@ public class Sistema implements IObligatorio {
         return Retorno.noImplementada();
     }
 
-    
-    
-    
-    
     @Override
     public Retorno usuarioMayor() {
         return Retorno.noImplementada();
     }
 
-    
-    
-    
-    
-    
     public Bicicleta buscarBiciPorCodigo(String codigo) {
         Bicicleta b = new Bicicleta(codigo, "biciAux");
 
@@ -260,20 +316,6 @@ public class Sistema implements IObligatorio {
         return null;
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     private String listarBicisRecursivo(Nodo<Bicicleta> nodo) {
         if (nodo == null) {
             return "";
@@ -298,12 +340,8 @@ public class Sistema implements IObligatorio {
 
     //PARA LA ESTRUCTURA DEL DIAGRAMA
     //TIENE QUE ESTAR JUSTIFICADO
-    
     //las etsaciones tienen gente esprando por una bici -> IMPLEMENTADO POR X PUNTO
     //bicies esperando por un acnlaje cuando no hay -> IMPLEMENTADO POR Y PUNTO
     //deshacer N alquileres
-    
-    
     //PARA LAENTREGA, DIAGRAMA DE CLAS,E DOCUMENTACION Y PROYECTO
-    
 }
