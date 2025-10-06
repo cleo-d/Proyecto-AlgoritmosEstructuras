@@ -35,7 +35,7 @@ public class Test2_03RegistrarUsuario {
         retorno = s.registrarUsuario("45629856", null);
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
 
-        retorno = s.registrarUsuario(" . ", "Usuario04");
+        retorno = s.registrarUsuario("  ", "Usuario04");
         assertEquals(Retorno.Resultado.ERROR_1, retorno.getResultado());
 
         retorno = s.registrarUsuario("74859521", "  ");
@@ -50,8 +50,8 @@ public class Test2_03RegistrarUsuario {
 
     @Test
     public void registrarUsuarioError03() {
-        s.registrarUsuario("6543216", "Usuario06");
-        retorno = s.registrarUsuario("6543216", "Usuario06");
+        s.registrarUsuario("65432169", "Usuario06");
+        retorno = s.registrarUsuario("65432169", "Usuario06");
         assertEquals(Retorno.Resultado.ERROR_3, retorno.getResultado());
 
     }

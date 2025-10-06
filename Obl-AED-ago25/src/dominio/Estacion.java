@@ -9,6 +9,7 @@ public class Estacion implements Comparable<Estacion> {
     private int capacidad;
     //No estoy seguro si deberia inluir una lista de Bicicletas aca 
     private ListaNodos<Bicicleta> listaBicicletas;
+    private ListaNodos<Usuario> usuariosEnEspera;
 
     public Estacion(String unNombre, String unBarrio, int unaCapacidad) {
         this.setNombre(unNombre);
