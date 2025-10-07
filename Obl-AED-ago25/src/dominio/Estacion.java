@@ -9,6 +9,8 @@ public class Estacion implements Comparable<Estacion> {
     private int capacidad;
     //No estoy seguro si deberia inluir una lista de Bicicletas aca 
     private ListaNodos<Bicicleta> listaBicicletas;
+    //esta lista seria una cola que se utiliza para mantener un orden en los usuarios que quieren
+    //retirar una bici cuando no hay una disponible en en anclaje
     private ListaNodos<Usuario> usuariosEnEspera;
 
     public Estacion(String unNombre, String unBarrio, int unaCapacidad) {

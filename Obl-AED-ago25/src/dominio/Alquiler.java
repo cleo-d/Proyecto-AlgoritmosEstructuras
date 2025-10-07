@@ -4,8 +4,8 @@ package dominio;
 import tads.ListaNodos;
 import tads.Nodo;
 
-
-public class Retiro {
+//Podria ser nombrada 'Alquiler' ya que representa una instancia de una bici siendo alquilada por un usuario
+public class Alquiler {
     
     //Esta clase se puede utilizar para guardar la informacion de un usuario que retira una bici de una estacion
     //Las estaciones van a tener una pila de retiros 
@@ -13,7 +13,7 @@ public class Retiro {
     private Nodo<Bicicleta> bici;
     private Nodo<Estacion> estacion;
     
-        public Retiro(Nodo<Usuario> unUsuario, Nodo<Bicicleta> unaBici, Nodo<Estacion> unaEstacion) {
+        public Alquiler(Nodo<Usuario> unUsuario, Nodo<Bicicleta> unaBici, Nodo<Estacion> unaEstacion) {
             
         this.setUsuario(unUsuario);
         this.setBici(unaBici);

@@ -3,6 +3,7 @@ package sistemaAutogestion;
 //Agregar aquí nombres y números de estudiante de los integrantes del equipo
 import dominio.Bicicleta;
 import dominio.Estacion;
+import dominio.Alquiler;
 import dominio.Usuario;
 import tads.ListaNodos;
 import tads.Nodo;
@@ -12,6 +13,9 @@ public class Sistema implements IObligatorio {
     private ListaNodos<Bicicleta> listaBicicletas;
     private ListaNodos<Estacion> listaEstaciones;
     private ListaNodos<Usuario> listaUsuarios;
+    //La siguiente lista mantendra un listado de las bicis alquiladas, probablemente sea mejor llamar la clase
+    //'Alquiler' y tener una listaAlquileres
+    private ListaNodos<Alquiler> listaAlquileres;
 
     @Override
     public Retorno crearSistemaDeGestion() {
