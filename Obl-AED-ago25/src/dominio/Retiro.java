@@ -5,7 +5,7 @@ import tads.ListaNodos;
 import tads.Nodo;
 
 
-public class Retiro {
+public class Retiro {//Pensado para segunda entrega
     
     //Esta clase se puede utilizar para guardar la informacion de un usuario que retira una bici de una estacion
     //Las estaciones van a tener una pila de retiros 
