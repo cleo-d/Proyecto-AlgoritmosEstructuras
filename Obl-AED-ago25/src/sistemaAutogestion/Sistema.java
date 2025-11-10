@@ -3,6 +3,7 @@ package sistemaAutogestion;
 //Agregar aquí nombres y números de estudiante de los integrantes del equipo
 import dominio.Bicicleta;
 import dominio.Estacion;
+import dominio.Alquiler;
 import dominio.Usuario;
 import tads.ListaNodos;
 import tads.Nodo;
@@ -12,6 +13,9 @@ public class Sistema implements IObligatorio {
     private ListaNodos<Bicicleta> listaBicicletas;
     private ListaNodos<Estacion> listaEstaciones;
     private ListaNodos<Usuario> listaUsuarios;
+    //La siguiente lista mantendra un listado de las bicis alquiladas, probablemente sea mejor llamar la clase
+    //'Alquiler' y tener una listaAlquileres
+    private ListaNodos<Alquiler> listaAlquileres;
 
     @Override
     public Retorno crearSistemaDeGestion() {
@@ -19,6 +23,7 @@ public class Sistema implements IObligatorio {
         listaBicicletas = new ListaNodos();
         listaEstaciones = new ListaNodos();
         listaUsuarios = new ListaNodos();
+        listaAlquileres = new ListaNodos();
 
         return Retorno.ok();
     }
@@ -180,7 +185,14 @@ public class Sistema implements IObligatorio {
     //QUIZA PUEDA HACER UN REFACTOR DE ESTE METODO, SE VIO EN LA CLASE DEL DIA 30/9/2025
     @Override
     public Retorno listarUsuarios() {
-
+        
+        //Comentario 9/11
+        
+        //Aca creo que deberiamos tener metodos en clase usuario que hagan el trabajo
+        //(???Ej. llamar a funcion listausuarios.listarUsuarios() ????)
+        
+        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        
         String nombre = "";
         Nodo aux = listaUsuarios.getInicio();
         while (aux != null) {
@@ -208,6 +220,10 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno informaciónMapa(String[][] mapa) {
+        
+        //Comentario 9/11
+        //Aca tengo logica que no estoy seguro si deberia estar aca 
+        
         int filaMax = 0;
         int maxColumna = 0;
         String resultadoParcial = "";
