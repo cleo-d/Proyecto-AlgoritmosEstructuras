@@ -22,7 +22,7 @@ public class Test2_06RepararBicicleta {
 
 
         Bicicleta b = ((Sistema) s).buscarBiciPorCodigo("YYY111");
-        b.setEstado("Alquilada");
+        b.setEstado("Mantenimiento");
 
         retorno = s.repararBicicleta("YYY111");
 

@@ -46,6 +46,9 @@ public class Test2_03RegistrarUsuario {
     public void registrarUsuarioError02() {
         retorno = s.registrarUsuario("8596", "Usuario05");
         assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
+        
+        retorno = s.registrarUsuario("12345A67", "Usuario05");
+        assertEquals(Retorno.Resultado.ERROR_2, retorno.getResultado());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package dominio;
 
+import tads.Cola;
 import tads.ListaNodos;
 
 public class Estacion implements Comparable<Estacion> {
@@ -9,7 +10,9 @@ public class Estacion implements Comparable<Estacion> {
     private int capacidad;
     //No estoy seguro si deberia inluir una lista de Bicicletas aca 
     private ListaNodos<Bicicleta> listaBicicletas;
-    private ListaNodos<Usuario> usuariosEnEspera;
+    //esta lista seria una cola que se utiliza para mantener un orden en los usuarios que quieren
+    //retirar una bici cuando no hay una disponible en en anclaje
+    private Cola<Usuario> usuariosEnEspera;
 
     public Estacion(String unNombre, String unBarrio, int unaCapacidad) {
         this.setNombre(unNombre);
@@ -17,6 +20,7 @@ public class Estacion implements Comparable<Estacion> {
         this.setCapacidad(unaCapacidad);
         //Si las instancias creadas de Estacion incluyen una lista de bicicletas deberia tener lo siguiente:
         listaBicicletas = new ListaNodos();
+        usuariosEnEspera = new Cola();
 
     }
 

@@ -52,7 +52,23 @@ public class Usuario implements Comparable<Usuario> {
         return this.nombre.compareToIgnoreCase(o.nombre);
     }
 
+    
     public boolean validarCedula(String cedula) {
-        return cedula != null && cedula.length() == 8;
+    if (cedula == null) return false;
+
+    cedula = cedula.trim();
+
+    if (cedula.length() != 8) return false;
+
+    // usamos para que sea numerica la cedula
+    for (char c : cedula.toCharArray()) {
+        if (!Character.isDigit(c)) {
+            return false;
+        }
     }
+
+    return true;
+    
+}
+
 }

@@ -134,6 +134,24 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
             }
         }
     }
+    
+    //metodo para respetar el tema de caja negra con usuarios
+    public String concatenar(String separador) {
+    String resultado = "";
+    Nodo<T> aux = inicio;
+
+    while (aux != null) {
+        resultado += aux.getDato();
+        aux = aux.getSiguiente();
+        if (aux != null) {
+            resultado += separador;
+        }
+    }
+
+    return resultado;
+}
+
+    
 
     @Override
     public int cantElementos() {
@@ -189,5 +207,26 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
     public T darElemento(T o) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
+    
+    
+    //metodos para seguir respetando caja negra en listarBicisDeposito
+    public String listarRecursivo(String separador) {
+    return listarRecursivoInterno(inicio, separador);
+}
+
+private String listarRecursivoInterno(Nodo<T> nodo, String separador) {
+    if (nodo == null) {
+        return "";
+    }
+
+    String actual = nodo.getDato().toString();
+
+    if (nodo.getSiguiente() != null) {
+        return actual + separador + listarRecursivoInterno(nodo.getSiguiente(), separador);
+    } else {
+        return actual;
+    }
+}
 
 }
