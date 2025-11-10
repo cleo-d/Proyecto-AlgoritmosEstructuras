@@ -185,7 +185,14 @@ public class Sistema implements IObligatorio {
     //QUIZA PUEDA HACER UN REFACTOR DE ESTE METODO, SE VIO EN LA CLASE DEL DIA 30/9/2025
     @Override
     public Retorno listarUsuarios() {
-
+        
+        //Comentario 9/11
+        
+        //Aca creo que deberiamos tener metodos en clase usuario que hagan el trabajo
+        //(???Ej. llamar a funcion listausuarios.listarUsuarios() ????)
+        
+        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        
         String nombre = "";
         Nodo aux = listaUsuarios.getInicio();
         while (aux != null) {
@@ -213,6 +220,10 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno informaciónMapa(String[][] mapa) {
+        
+        //Comentario 9/11
+        //Aca tengo logica que no estoy seguro si deberia estar aca 
+        
         int filaMax = 0;
         int maxColumna = 0;
         String resultadoParcial = "";
