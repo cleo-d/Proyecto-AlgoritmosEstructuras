@@ -3,10 +3,10 @@ package dominio;
 
 import tads.ListaNodos;
 import tads.Nodo;
-
+//Agrego un comentario (Cleo)
 //Podria ser nombrada 'Alquiler' ya que representa una instancia de una bici siendo alquilada por un usuario
 public class Alquiler implements Comparable <Alquiler> {
-    
+   
     //Esta clase se puede utilizar para guardar la informacion de un usuario que retira una bici de una estacion
     //Las estaciones van a tener una pila de retiros 
     private Nodo<Usuario> usuario;
