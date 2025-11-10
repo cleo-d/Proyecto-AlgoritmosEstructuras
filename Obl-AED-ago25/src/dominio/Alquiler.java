@@ -1,19 +1,16 @@
 
 package dominio;
-
-import tads.ListaNodos;
-import tads.Nodo;
-//Agrego un comentario (Cleo)
+//comentarioprueba
 //Podria ser nombrada 'Alquiler' ya que representa una instancia de una bici siendo alquilada por un usuario
 public class Alquiler implements Comparable <Alquiler> {
-   
+    
     //Esta clase se puede utilizar para guardar la informacion de un usuario que retira una bici de una estacion
     //Las estaciones van a tener una pila de retiros 
-    private Nodo<Usuario> usuario;
-    private Nodo<Bicicleta> bici;
-    private Nodo<Estacion> estacion;
+    private Usuario usuario;
+    private Bicicleta bici;
+    private Estacion estacion;
     
-        public Alquiler(Nodo<Usuario> unUsuario, Nodo<Bicicleta> unaBici, Nodo<Estacion> unaEstacion) {
+        public Alquiler(Usuario unUsuario, Bicicleta unaBici, Estacion unaEstacion) {
             
         this.setUsuario(unUsuario);
         this.setBici(unaBici);
@@ -22,32 +19,32 @@ public class Alquiler implements Comparable <Alquiler> {
     }
 
     
-    public Nodo<Usuario> getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
 
-    public void setUsuario(Nodo<Usuario> usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
 
-    public Nodo<Bicicleta> getBici() {
+    public Bicicleta getBici() {
         return bici;
     }
 
 
-    public void setBici(Nodo<Bicicleta> bici) {
+    public void setBici (Bicicleta bici) {
         this.bici = bici;
     }
 
 
-    public Nodo<Estacion> getEstacion() {
+    public Estacion getEstacion() {
         return estacion;
     }
 
 
-    public void setEstacion(Nodo<Estacion> estacion) {
+    public void setEstacion(Estacion estacion) {
         this.estacion = estacion;
     }
 
@@ -56,6 +53,10 @@ public class Alquiler implements Comparable <Alquiler> {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
+    @Override
+    public String toString() {
+        return bici.getCodigo() + "#" + usuario.getCedula() + "#" + estacion.getNombre();
+}
     
     
 }

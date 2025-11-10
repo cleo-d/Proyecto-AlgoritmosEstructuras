@@ -1,29 +1,29 @@
 package sistemaAutogestion;
 
-//Agregar aquí nombres y números de estudiante de los integrantes del equipo
+//Mateo Bragunde 351711 - Cleo Diaz 260735
 import dominio.Bicicleta;
 import dominio.Estacion;
 import dominio.Alquiler;
 import dominio.Usuario;
+import tads.Cola;
 import tads.ListaNodos;
-import tads.Nodo;
+import tads.Pila;
 
 public class Sistema implements IObligatorio {
 
     private ListaNodos<Bicicleta> listaBicicletas;
     private ListaNodos<Estacion> listaEstaciones;
     private ListaNodos<Usuario> listaUsuarios;
-    //La siguiente lista mantendra un listado de las bicis alquiladas, probablemente sea mejor llamar la clase
-    //'Alquiler' y tener una listaAlquileres
-    private ListaNodos<Alquiler> listaAlquileres;
-
+    private Pila<Alquiler> pilaRetiros;
+    
     @Override
     public Retorno crearSistemaDeGestion() {
 
         listaBicicletas = new ListaNodos();
         listaEstaciones = new ListaNodos();
         listaUsuarios = new ListaNodos();
-        listaAlquileres = new ListaNodos();
+        pilaRetiros = new Pila();
+
 
         return Retorno.ok();
     }
@@ -117,15 +117,20 @@ public class Sistema implements IObligatorio {
     @Override
     public Retorno repararBicicleta(String codigo) {
         //Busco la bici en el elistado
-        Bicicleta b = buscarBiciPorCodigo(codigo);
+        
 
         if (codigo == null || codigo.trim().isEmpty()) {
             return Retorno.error1();
         }
+        
+        codigo = codigo.trim();
+        
+        Bicicleta b = buscarBiciPorCodigo(codigo);
+        
         if (b == null) {
             return Retorno.error2();
         }
-        if (!("Alquilada".equals(b.getEstado()))) {
+        if (!("Mantenimiento".equals(b.getEstado()))) {
             return Retorno.error3();
         } else {
             b.setEstado("Disponible");
@@ -162,12 +167,18 @@ public class Sistema implements IObligatorio {
     @Override
     public Retorno obtenerUsuario(String cedula) {
 
-        if (cedula == null || cedula.trim().isEmpty()) {
+        if (cedula == null) {
             return Retorno.error1();
-        }
+}
+
+        cedula = cedula.trim(); //usamos cedula limpia si no es null
+
+        if (cedula.isEmpty()) {
+            return Retorno.error1();
+}
         if (cedula.length() != 8) {
             return Retorno.error2();
-        }
+}
 
         Usuario u = new Usuario(cedula, "nombreAux");
 
@@ -185,38 +196,22 @@ public class Sistema implements IObligatorio {
     //QUIZA PUEDA HACER UN REFACTOR DE ESTE METODO, SE VIO EN LA CLASE DEL DIA 30/9/2025
     @Override
     public Retorno listarUsuarios() {
-        
-        //Comentario 9/11
-        
-        //Aca creo que deberiamos tener metodos en clase usuario que hagan el trabajo
-        //(???Ej. llamar a funcion listausuarios.listarUsuarios() ????)
-        
-        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-        
-        String nombre = "";
-        Nodo aux = listaUsuarios.getInicio();
-        while (aux != null) {
-            nombre += aux.getDato();
-            aux = aux.getSiguiente();
-            if (aux != null) {
-                nombre += "|";
-            }
-        }
-        Retorno r = new Retorno(Retorno.Resultado.OK, nombre);
-        return r;
-    }
+        String resultado = listaUsuarios.concatenar("|");
+        return new Retorno(Retorno.Resultado.OK, resultado);
+}
+
 
     @Override
     public Retorno listarBicisEnDeposito() {
         if (listaBicicletas.esVacia()) {
-            return Retorno.ok("");
-        }
-
-        String resultado = listarBicisRecursivo(listaBicicletas.getInicio());
-
-        Retorno r = new Retorno(Retorno.Resultado.OK, resultado);
-        return r;
+        return Retorno.ok("");
     }
+
+        String resultado = listaBicicletas.listarRecursivo("|");
+
+        return new Retorno(Retorno.Resultado.OK, resultado);
+}
+
 
     @Override
     public Retorno informaciónMapa(String[][] mapa) {
@@ -237,7 +232,8 @@ public class Sistema implements IObligatorio {
             //Aca recorro cada posicion dentro de la fila
             for (int j = 0; j < mapa[i].length; j++) {
                 //System.out.println("trabajo con j: " + j);
-                if (!mapa[i][j].equals("o")) {
+                if (mapa[i][j] != null && !mapa[i][j].trim().equalsIgnoreCase("o") && !mapa[i][j].trim().isEmpty()) { //arreglo de vacios y "O"
+
                     countFila++;
                     consecutiva++;
                     //System.out.println("countFila: "+ countFila);
@@ -257,7 +253,7 @@ public class Sistema implements IObligatorio {
         for (int j = 0; j < mapa[0].length; j++) {
             int countCol = 0;
             for (int i = 0; i < mapa.length; i++) {
-                if (!mapa[i][j].equals("o")) {
+                if (mapa[i][j] != null && !mapa[i][j].trim().equalsIgnoreCase("o") && !mapa[i][j].trim().isEmpty()) { //arreglo de vacios y "O"
                     countCol++;
                 }
             }
@@ -330,21 +326,6 @@ public class Sistema implements IObligatorio {
             return b;
         }
         return null;
-    }
-
-    private String listarBicisRecursivo(Nodo<Bicicleta> nodo) {
-        if (nodo == null) {
-            return "";
-        }
-
-        Bicicleta b = nodo.getDato();
-        String actual = b.getCodigo() + "#" + b.getTipo() + "#" + b.getEstado();
-
-        if (nodo.getSiguiente() != null) {
-            return actual + "|" + listarBicisRecursivo(nodo.getSiguiente());
-        } else {
-            return actual;
-        }
     }
 
     public void setEstadoBici(String codigo, String nuevoEstado) {
