@@ -1,6 +1,6 @@
 
 package dominio;
-
+//comentarioprueba
 //Podria ser nombrada 'Alquiler' ya que representa una instancia de una bici siendo alquilada por un usuario
 public class Alquiler implements Comparable <Alquiler> {
     
