@@ -5,7 +5,7 @@ import tads.ListaNodos;
 import tads.Nodo;
 
 //Podria ser nombrada 'Alquiler' ya que representa una instancia de una bici siendo alquilada por un usuario
-public class Alquiler {
+public class Alquiler implements Comparable <Alquiler> {
     
     //Esta clase se puede utilizar para guardar la informacion de un usuario que retira una bici de una estacion
     //Las estaciones van a tener una pila de retiros 
@@ -49,6 +49,11 @@ public class Alquiler {
 
     public void setEstacion(Nodo<Estacion> estacion) {
         this.estacion = estacion;
+    }
+
+    @Override
+    public int compareTo(Alquiler o) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
     

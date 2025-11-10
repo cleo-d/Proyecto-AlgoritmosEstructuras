@@ -23,6 +23,7 @@ public class Sistema implements IObligatorio {
         listaBicicletas = new ListaNodos();
         listaEstaciones = new ListaNodos();
         listaUsuarios = new ListaNodos();
+        listaAlquileres = new ListaNodos();
 
         return Retorno.ok();
     }
