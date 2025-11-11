@@ -229,17 +229,19 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
         }
     }
 
+    //HAY QUE TESTEAR ESTE METODO
     public void borrarElemento(T o) {
         if (!esVacia()) {
             if (inicio.getSiguiente() == null) { //uno solo
                 vaciar();
             } else {
-
                 Nodo aux = getInicio();
 
                 while (aux != null) {
                     if (aux.getDato().equals(o)) {
+                        aux.getSiguiente().setAnterior(aux.getAnterior());
                         aux.setAnterior(null);
+                        aux.getAnterior().setSiguiente(aux.getSiguiente());
                         aux.setSiguiente(null);
                     }
                     aux = aux.getSiguiente();
