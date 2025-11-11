@@ -17,6 +17,7 @@ public class Cola<T extends Comparable> implements ICola<T> {
         return inicio == null;
     }
 
+    //DEBERIA TENER UNA OPCION DE AGREGAR INICIO?
     private void agregarInicio(T n) {
 
         Nodo nuevo = new Nodo(n);

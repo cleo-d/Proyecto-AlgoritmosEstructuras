@@ -231,23 +231,42 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
 
     //HAY QUE TESTEAR ESTE METODO
     public void borrarElemento(T o) {
-        if (!esVacia()) {
-            if (inicio.getSiguiente() == null) { //uno solo
-                vaciar();
-            } else {
-                Nodo aux = getInicio();
+        if (esVacia()) {
+            return;
+        }
 
-                while (aux != null) {
-                    if (aux.getDato().equals(o)) {
-                        aux.getSiguiente().setAnterior(aux.getAnterior());
-                        aux.setAnterior(null);
-                        aux.getAnterior().setSiguiente(aux.getSiguiente());
-                        aux.setSiguiente(null);
+        Nodo<T> actual = inicio;
+
+        while (actual != null) {
+            if (actual.getDato().equals(o)) {
+
+                // Caso 1: es el único nodo
+                if (actual == inicio && actual == fin) {
+                    inicio = null;
+                    fin = null;
+                } // Caso 2: es el primer nodo (pero hay más)
+                else if (actual == inicio) {
+                    inicio = actual.getSiguiente();
+                    if (inicio != null) {
+                        inicio.setAnterior(null);
                     }
-                    aux = aux.getSiguiente();
+                } // Caso 3: es el último nodo (pero hay más)
+                else if (actual == fin) {
+                    fin = actual.getAnterior();
+                    if (fin != null) {
+                        fin.setSiguiente(null);
+                    }
+                } // Caso 4: está en el medio
+                else {
+                    actual.getAnterior().setSiguiente(actual.getSiguiente());
+                    actual.getSiguiente().setAnterior(actual.getAnterior());
                 }
+
                 cantElementos--;
+                return; // borramos solo la primera coincidencia
             }
+
+            actual = actual.getSiguiente();
         }
     }
 

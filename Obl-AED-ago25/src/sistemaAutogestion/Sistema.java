@@ -5,7 +5,6 @@ import dominio.Bicicleta;
 import dominio.Estacion;
 import dominio.Alquiler;
 import dominio.Usuario;
-import tads.Cola;
 import tads.ListaNodos;
 import tads.Pila;
 
@@ -93,14 +92,16 @@ public class Sistema implements IObligatorio {
     public Retorno marcarEnMantenimiento(String codigo, String motivo) {
 
         //Busco la bici en el elistado
-        Bicicleta b = buscarBiciPorCodigo(codigo);
+        Bicicleta b = new Bicicleta(codigo, "tipoAux");
+
+        if (!listaBicicletas.existeElemento(b)) {
+            return Retorno.error2();
+        } else {
+            b = listaBicicletas.buscarElemento(b);
+        }
 
         if (codigo == null || codigo.trim().isEmpty() || motivo == null || motivo.trim().isEmpty()) {
             return Retorno.error1();
-        }
-        //Debo implementar la funcion existeBici
-        if (b == null) {
-            return Retorno.error2();
         }
         if ((b.getEstado().equals("Alquilada"))) {
             return Retorno.error3();
@@ -123,11 +124,14 @@ public class Sistema implements IObligatorio {
 
         codigo = codigo.trim();
 
-        Bicicleta b = buscarBiciPorCodigo(codigo);
+        Bicicleta b = new Bicicleta(codigo, "tipoAux");
 
-        if (b == null) {
+        if (!listaBicicletas.existeElemento(b)) {
             return Retorno.error2();
+        } else {
+            b = listaBicicletas.buscarElemento(b);
         }
+
         if (!("Mantenimiento".equals(b.getEstado()))) {
             return Retorno.error3();
         } else {
@@ -149,12 +153,15 @@ public class Sistema implements IObligatorio {
         if (!listaEstaciones.existeElemento(e)) {
             return Retorno.error2();
         } else {
+            System.out.println("Entro al else en eliminarEstacion");
             e = listaEstaciones.buscarElemento(e);
+            System.out.println(e);
             if (e.tieneBicicletasAncladas() || e.tieneUsuariosEnEspera()) {
                 return Retorno.error3();
-            }else{
-               listaEstaciones.borrarElemento(e);
-               return Retorno.ok();
+            } else {
+                System.out.println("Dejo borrar la estacion");
+                listaEstaciones.borrarElemento(e);
+                return Retorno.ok();
             }
         }
 
@@ -162,12 +169,72 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno asignarBicicletaAEstacion(String codigo, String nombreEstacion) {
+        //reviso parametros que no sean null
+        if (codigo == null || codigo.trim().isEmpty() || nombreEstacion == null || nombreEstacion.trim().isEmpty()) {
+            return Retorno.error1();
+        }
+        Bicicleta b = new Bicicleta(codigo, "estadoAux");
+        if (!listaBicicletas.existeElemento(b)) {
+
+        }
+        //creo estacion auxiliar
+        Estacion e = new Estacion(nombreEstacion, "barrioAux", 3);
+        //Reviso si existe el elemento en la lista
+        if (!listaEstaciones.existeElemento(e)) {
+            return Retorno.error2();
+        } else {
+            if (e.tieneBicicletasAncladas() || e.tieneBicisEnEspera()) {
+                return Retorno.error3();
+            }
+
+        }
+
+        //validar si existe bici y si esta 'disponible' (hay que revisar listaBicis y/o estaciones)
         return Retorno.noImplementada();
     }
 
     @Override
     public Retorno alquilarBicicleta(String cedula, String nombreEstacion) {
-        return Retorno.noImplementada();
+
+        if (cedula == null || cedula.trim().isEmpty() || nombreEstacion == null || nombreEstacion.trim().isEmpty()) {
+            return Retorno.error1();
+        }
+        Usuario u = new Usuario(cedula, "usuarioAux");
+
+        //Primero valido si existe el usuario en la lista
+        if (!listaUsuarios.existeElemento(u)) {
+            return Retorno.error2();
+        } else {
+            //En caso que exista lo busco de la lista y lo guardo en u
+            u = listaUsuarios.buscarElemento(u);
+        }
+
+        Estacion e = new Estacion(nombreEstacion, "barrioAux", 5);
+
+        //Valido si existe la estacion en la lista
+        if (!listaEstaciones.existeElemento(e)) {
+            return Retorno.error3();
+        } else {
+            //en caso que exista lo guardo en e
+            e = listaEstaciones.buscarElemento(e);
+        }
+
+        //Reviso si la estacion tiene bicicletas ancladas
+        if (e.tieneBicicletasAncladas()) {
+
+            Bicicleta b = e.alquilarBicicleta(u);
+            //Creo la instancia del alquiler y lo agrego a la lista en sistema
+
+            Alquiler a = new Alquiler(u, b, e);
+            pilaRetiros.apilar(a);
+            return Retorno.ok();
+
+        } else {
+            //No hay bicis ancladas en la estacion entonces pongo al usuario en espera
+            e.agregarUsuarioEnEspera(u);
+            return Retorno.ok();
+        }
+
     }
 
     @Override
@@ -177,7 +244,28 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno deshacerUltimosRetiros(int n) {
-        return Retorno.noImplementada();
+
+        if (n <= 0) {
+            return Retorno.error1();
+        } else {
+
+            for (int i = 0; i >= n; i++) {
+                //Trabajo con cada Alquiler
+                Alquiler a = pilaRetiros.top();
+                //Agarro la bici del alquiler
+                Bicicleta b = a.getBici();
+                //Agarro la estacion del Alquiler
+                Estacion e = a.getEstacion();
+
+                e.agregarBicicleta(b);
+
+                //Luego de trabajar con el Alquiler se desapila
+                pilaRetiros.desapilar();
+            }
+
+            return new Retorno(Retorno.Resultado.OK, String.valueOf(n));
+        }
+
     }
 
     @Override
@@ -202,7 +290,6 @@ public class Sistema implements IObligatorio {
             return Retorno.error3();
         } else {
             u = listaUsuarios.buscarElemento(u);
-            System.out.println("DEBUG: found user: " + u);
             String nombre = u.getNombre() + "#" + u.getCedula();
             Retorno r = new Retorno(Retorno.Resultado.OK, nombre);
             return r;
@@ -327,21 +414,12 @@ public class Sistema implements IObligatorio {
         return Retorno.noImplementada();
     }
 
-    public Bicicleta buscarBiciPorCodigo(String codigo) {
-        Bicicleta b = new Bicicleta(codigo, "biciAux");
-
-        if (listaBicicletas.existeElemento(b)) {
-            b = listaBicicletas.buscarElemento(b);
-            return b;
-        }
-        return null;
-    }
-
-    public void setEstadoBici(String codigo, String nuevoEstado) {
-        Bicicleta b = buscarBiciPorCodigo(codigo);
-        if (b != null) {
-            b.setEstado(nuevoEstado);
-        }
+    /**
+     *
+     * @param e
+     */
+    public void agregarEstacion(Estacion e) {
+        listaEstaciones.agregarOrdenado(e);
     }
 
     //PARA LA ESTRUCTURA DEL DIAGRAMA

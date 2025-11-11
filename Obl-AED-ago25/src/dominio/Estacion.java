@@ -9,16 +9,18 @@ public class Estacion implements Comparable<Estacion> {
     private String nombre;
     private String barrio;
     private int capacidad;
-    private Pila<Bicicleta> listaBicicletas; //Nunca va a ser mas de 5 
+    private Pila<Bicicleta> pilaBicicletas; //Nunca va a ser mas de 5 
     private Cola<Usuario> usuariosEnEspera;
+    private Cola<Bicicleta> colaAnclaje;
 
     public Estacion(String unNombre, String unBarrio, int unaCapacidad) {
         this.setNombre(unNombre);
         this.setBarrio(unBarrio);
         this.setCapacidad(unaCapacidad);
-        
-        listaBicicletas = new Pila();
+
+        pilaBicicletas = new Pila();
         usuariosEnEspera = new Cola();
+        colaAnclaje = new Cola();
 
     }
 
@@ -70,22 +72,52 @@ public class Estacion implements Comparable<Estacion> {
     public int compareTo(Estacion o) {
         return this.getNombre().compareToIgnoreCase(o.getNombre());
     }
-    
-    public boolean tieneBicicletasAncladas(){
-        if(capacidad == 0) {
-            return false;
-        }else{
-            return true;
+
+    public boolean tieneBicicletasAncladas() {
+        return !pilaBicicletas.esVacia();
+    }
+
+    public boolean tieneBicisEnEspera() {
+        return !colaAnclaje.esVacia();
+    }
+
+    public boolean tieneCapacidad() {
+        return pilaBicicletas.cantElementos() < capacidad;
+    }
+
+    public boolean tieneUsuariosEnEspera() {
+        return !usuariosEnEspera.esVacia();
+    }
+
+    public void agregarBicicleta(Bicicleta b) {
+        b.setEstado("Disponible");
+        if (tieneCapacidad()) {
+            // hay lugar en la estación,va a la pila de bicis ancladas
+            pilaBicicletas.apilar(b);
+        } else {
+            // está llena va a la cola de Bicis en espera de anclaje
+            colaAnclaje.encolar(b);
         }
     }
-    
-    public boolean tieneUsuariosEnEspera(){
-        if (usuariosEnEspera.esVacia()){
-            return false;
-        }else {
-            return true;
-        }
+
+    public void agregarUsuarioEnEspera(Usuario u) {
+        this.usuariosEnEspera.encolar(u);
     }
-    
+
+    public void agregarColaAnclaje(Bicicleta b) {
+        this.colaAnclaje.encolar(b);
+    }
+
+    //Este metodo agarra una bici de la pila, y setea el estado de la bici en "Alquilada" (tambien retorna esa bicicleta)
+    public Bicicleta alquilarBicicleta(Usuario u) {
+        if (!pilaBicicletas.esVacia()) {
+            Bicicleta b = pilaBicicletas.top();
+
+            b.setEstado("Alquilada");
+            pilaBicicletas.desapilar();
+            return b;
+        }
+        return null;
+    }
 
 }
