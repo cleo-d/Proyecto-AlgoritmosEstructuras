@@ -15,7 +15,7 @@ public class Sistema implements IObligatorio {
     private ListaNodos<Estacion> listaEstaciones;
     private ListaNodos<Usuario> listaUsuarios;
     private Pila<Alquiler> pilaRetiros;
-    
+
     @Override
     public Retorno crearSistemaDeGestion() {
 
@@ -23,7 +23,6 @@ public class Sistema implements IObligatorio {
         listaEstaciones = new ListaNodos();
         listaUsuarios = new ListaNodos();
         pilaRetiros = new Pila();
-
 
         return Retorno.ok();
     }
@@ -117,16 +116,15 @@ public class Sistema implements IObligatorio {
     @Override
     public Retorno repararBicicleta(String codigo) {
         //Busco la bici en el elistado
-        
 
         if (codigo == null || codigo.trim().isEmpty()) {
             return Retorno.error1();
         }
-        
+
         codigo = codigo.trim();
-        
+
         Bicicleta b = buscarBiciPorCodigo(codigo);
-        
+
         if (b == null) {
             return Retorno.error2();
         }
@@ -141,7 +139,25 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno eliminarEstacion(String nombre) {
-        return Retorno.noImplementada();
+
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return Retorno.error1();
+        }
+
+        Estacion e = new Estacion(nombre, "barrioAux", 3);
+
+        if (!listaEstaciones.existeElemento(e)) {
+            return Retorno.error2();
+        } else {
+            e = listaEstaciones.buscarElemento(e);
+            if (e.tieneBicicletasAncladas() || e.tieneUsuariosEnEspera()) {
+                return Retorno.error3();
+            }else{
+               listaEstaciones.borrarElemento(e);
+               return Retorno.ok();
+            }
+        }
+
     }
 
     @Override
@@ -169,16 +185,16 @@ public class Sistema implements IObligatorio {
 
         if (cedula == null) {
             return Retorno.error1();
-}
+        }
 
         cedula = cedula.trim(); //usamos cedula limpia si no es null
 
         if (cedula.isEmpty()) {
             return Retorno.error1();
-}
+        }
         if (cedula.length() != 8) {
             return Retorno.error2();
-}
+        }
 
         Usuario u = new Usuario(cedula, "nombreAux");
 
@@ -198,20 +214,18 @@ public class Sistema implements IObligatorio {
     public Retorno listarUsuarios() {
         String resultado = listaUsuarios.concatenar("|");
         return new Retorno(Retorno.Resultado.OK, resultado);
-}
-
+    }
 
     @Override
     public Retorno listarBicisEnDeposito() {
         if (listaBicicletas.esVacia()) {
-        return Retorno.ok("");
-    }
+            return Retorno.ok("");
+        }
 
         String resultado = listaBicicletas.listarRecursivo("|");
 
         return new Retorno(Retorno.Resultado.OK, resultado);
-}
-
+    }
 
     @Override
     public Retorno informaciónMapa(String[][] mapa) {
@@ -278,7 +292,6 @@ public class Sistema implements IObligatorio {
         }
 
         resultadoParcial += existeAscendencia ? "existe" : "no existe";
-
 
         Retorno r = new Retorno(Retorno.Resultado.OK, resultadoParcial);
         return r;

@@ -2,24 +2,22 @@ package dominio;
 
 import tads.Cola;
 import tads.ListaNodos;
+import tads.Pila;
 
 public class Estacion implements Comparable<Estacion> {
 
     private String nombre;
     private String barrio;
     private int capacidad;
-    //No estoy seguro si deberia inluir una lista de Bicicletas aca 
-    private ListaNodos<Bicicleta> listaBicicletas;
-    //esta lista seria una cola que se utiliza para mantener un orden en los usuarios que quieren
-    //retirar una bici cuando no hay una disponible en en anclaje
+    private Pila<Bicicleta> listaBicicletas; //Nunca va a ser mas de 5 
     private Cola<Usuario> usuariosEnEspera;
 
     public Estacion(String unNombre, String unBarrio, int unaCapacidad) {
         this.setNombre(unNombre);
         this.setBarrio(unBarrio);
         this.setCapacidad(unaCapacidad);
-        //Si las instancias creadas de Estacion incluyen una lista de bicicletas deberia tener lo siguiente:
-        listaBicicletas = new ListaNodos();
+        
+        listaBicicletas = new Pila();
         usuariosEnEspera = new Cola();
 
     }
@@ -72,5 +70,22 @@ public class Estacion implements Comparable<Estacion> {
     public int compareTo(Estacion o) {
         return this.getNombre().compareToIgnoreCase(o.getNombre());
     }
+    
+    public boolean tieneBicicletasAncladas(){
+        if(capacidad == 0) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    public boolean tieneUsuariosEnEspera(){
+        if (usuariosEnEspera.esVacia()){
+            return false;
+        }else {
+            return true;
+        }
+    }
+    
 
 }
