@@ -6,6 +6,7 @@ import dominio.Estacion;
 import dominio.Alquiler;
 import dominio.Usuario;
 import tads.ListaNodos;
+import tads.Nodo;
 import tads.Pila;
 
 public class Sistema implements IObligatorio {
@@ -156,7 +157,7 @@ public class Sistema implements IObligatorio {
             System.out.println("Entro al else en eliminarEstacion");
             e = listaEstaciones.buscarElemento(e);
             System.out.println(e);
-            if (e.tieneBicicletasAncladas() || e.tieneUsuariosEnEspera()) {
+            if (e.tieneBicicletasAncladas() || e.tieneUsuariosEnEspera() || e.tieneBicisEnEspera()) {
                 return Retorno.error3();
             } else {
                 System.out.println("Dejo borrar la estacion");
@@ -169,38 +170,54 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno asignarBicicletaAEstacion(String codigo, String nombreEstacion) {
-        //reviso parametros que no sean null
+
+        //Reviso parametros que no sean null
         if (codigo == null || codigo.trim().isEmpty() || nombreEstacion == null || nombreEstacion.trim().isEmpty()) {
             return Retorno.error1();
         }
-        Bicicleta b = new Bicicleta(codigo, "estadoAux");
-        if (!listaBicicletas.existeElemento(b)) {
 
-        }
-        //creo estacion auxiliar
-        Estacion e = new Estacion(nombreEstacion, "barrioAux", 3);
-        //Reviso si existe el elemento en la lista
-        if (!listaEstaciones.existeElemento(e)) {
+        //Creo bici auxiliar para validar si existe en el sistema
+        Bicicleta b = new Bicicleta(codigo, "estadoAux");
+
+        if (!listaBicicletas.existeElemento(b)) {
+            //Que pasa si la bici no esta en la listaBicicletas y esta en una Estacion????Habria que buscar la bici dentro de TODAS las estaciones?
             return Retorno.error2();
         } else {
-            if (e.tieneBicicletasAncladas() || e.tieneBicisEnEspera()) {
-                return Retorno.error3();
+            b = listaBicicletas.buscarElemento(b);
+            //Reviso si la bici tiene estado "Disponible"
+            if (!"Disponible".equals(b.getEstado())) {
+                return Retorno.error2();
             }
-
         }
 
-        //validar si existe bici y si esta 'disponible' (hay que revisar listaBicis y/o estaciones)
-        return Retorno.noImplementada();
+        //Creo estacion auxiliar
+        Estacion e = new Estacion(nombreEstacion, "barrioAux", 3);
+        //Reviso si existe la estacion en la lista en la lista
+        if (!listaEstaciones.existeElemento(e)) {
+            return Retorno.error3();
+        } else {
+            e = listaEstaciones.buscarElemento(e);
+        }
+        //reviso si la estacion tiene anclajes libres
+        if (!e.tieneAnclajesLibres()) {
+            return Retorno.error4();
+        }
+
+        //Paso las validaciones, se procede a agregar la bicicleta a la estacion
+        e.agregarBicicleta(b);
+        return Retorno.ok();
     }
 
     @Override
     public Retorno alquilarBicicleta(String cedula, String nombreEstacion) {
 
+        //Valido los parametros recibidos
         if (cedula == null || cedula.trim().isEmpty() || nombreEstacion == null || nombreEstacion.trim().isEmpty()) {
             return Retorno.error1();
         }
-        Usuario u = new Usuario(cedula, "usuarioAux");
 
+        //Creo usuario auxiliar para validar si existe en el sistema
+        Usuario u = new Usuario(cedula, "usuarioAux");
         //Primero valido si existe el usuario en la lista
         if (!listaUsuarios.existeElemento(u)) {
             return Retorno.error2();
@@ -209,8 +226,8 @@ public class Sistema implements IObligatorio {
             u = listaUsuarios.buscarElemento(u);
         }
 
+        //Creo Estacion auxiliar para validar si existe en el sistema
         Estacion e = new Estacion(nombreEstacion, "barrioAux", 5);
-
         //Valido si existe la estacion en la lista
         if (!listaEstaciones.existeElemento(e)) {
             return Retorno.error3();
@@ -219,18 +236,14 @@ public class Sistema implements IObligatorio {
             e = listaEstaciones.buscarElemento(e);
         }
 
-        //Reviso si la estacion tiene bicicletas ancladas
         if (e.tieneBicicletasAncladas()) {
-
             Bicicleta b = e.alquilarBicicleta(u);
-            //Creo la instancia del alquiler y lo agrego a la lista en sistema
-
             Alquiler a = new Alquiler(u, b, e);
-            pilaRetiros.apilar(a);
+            //Creo un registro de Alquiler en sistema
+            this.agregarAlquiler(a);
             return Retorno.ok();
 
         } else {
-            //No hay bicis ancladas en la estacion entonces pongo al usuario en espera
             e.agregarUsuarioEnEspera(u);
             return Retorno.ok();
         }
@@ -306,7 +319,7 @@ public class Sistema implements IObligatorio {
     @Override
     public Retorno listarBicisEnDeposito() {
         if (listaBicicletas.esVacia()) {
-            return Retorno.ok("");
+            return Retorno.ok();
         }
 
         String resultado = listaBicicletas.listarRecursivo("|");
@@ -386,7 +399,26 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno listarBicicletasDeEstacion(String nombreEstacion) {
-        return Retorno.noImplementada();
+
+        //Creo Estacion auxiliar para validar si existe en el sistema
+        Estacion e = new Estacion(nombreEstacion, "barrioAux", 5);
+
+        //Valido si existe la estacion en la lista
+        if (!listaEstaciones.existeElemento(e)) {
+            return new Retorno(Retorno.Resultado.OK, "No existe la estacion");
+        } else {
+            //Encuentro la estacion del Sistema, ahora debo trabajar con ella apra listar las bicicletas en orden ascendente por codigo
+            e = listaEstaciones.buscarElemento(e);
+
+            //ESTOY EN DUDA DE COMO RESOLVER ESTO
+            //ListaNodos listaRet = e.mostrarBicicletas();
+            //listaRet.mostrar();
+            String stringRet = e.mostrarBicicletasPorCodigo();
+
+            Retorno r = new Retorno(Retorno.Resultado.OK, stringRet);
+            return r;
+
+        }
     }
 
     @Override
@@ -396,7 +428,88 @@ public class Sistema implements IObligatorio {
 
     @Override
     public Retorno ocupacionPromedioXBarrio() {
-        return Retorno.noImplementada();
+
+        if (listaEstaciones.cantElementos() == 0) {
+            return new Retorno(Retorno.Resultado.OK, "No hay estaciones en el Sistema");
+        }
+
+        int nEstaciones = listaEstaciones.cantElementos();
+
+        // Como máximo puede haber nEstaciones barrios distintos
+        String[] barrios = new String[nEstaciones];
+        int[] bicisTotales = new int[nEstaciones];
+        int[] capacidadTotal = new int[nEstaciones];
+        int cantBarrios = 0;
+
+        // 1) Recorro la lista de estaciones
+        for (int i = 0; i < nEstaciones; i++) {
+            Estacion est = listaEstaciones.obtenerElementoDePos(i);
+
+            String barrio = est.getBarrio();
+            int bicis = est.getCantidadBicisAncladas();
+            int capacidad = est.getCapacidad();
+
+            // Reviso si ya tengo el barrio en mi array
+            int pos = -1;
+            for (int j = 0; j < cantBarrios; j++) {
+                if (barrios[j].equalsIgnoreCase(barrio)) {
+                    pos = j;
+                    break;
+                }
+            }
+            if (pos == -1) {
+                pos = cantBarrios;
+                barrios[pos] = barrio;
+                bicisTotales[pos] = 0;
+                capacidadTotal[pos] = 0;
+                cantBarrios++;
+            }
+
+            // Acumulo datos para ese barrio
+            bicisTotales[pos] += bicis;
+            capacidadTotal[pos] += capacidad;
+        }
+
+        // 2) Ordeno los barrios alfabéticamente con bubble sort
+        for (int i = 0; i < cantBarrios - 1; i++) {
+            for (int j = 0; j < cantBarrios - 1 - i; j++) {
+                if (barrios[j].compareToIgnoreCase(barrios[j + 1]) > 0) {
+                    // swap barrios
+                    String tmpB = barrios[j];
+                    barrios[j] = barrios[j + 1];
+                    barrios[j + 1] = tmpB;
+
+                    // swap bicis
+                    int tmpI = bicisTotales[j];
+                    bicisTotales[j] = bicisTotales[j + 1];
+                    bicisTotales[j + 1] = tmpI;
+
+                    // swap capacidad
+                    tmpI = capacidadTotal[j];
+                    capacidadTotal[j] = capacidadTotal[j + 1];
+                    capacidadTotal[j + 1] = tmpI;
+                }
+            }
+        }
+
+        // 3) Construyo el String "barrio1#porcentaje|barrio2#porcentaje"
+        String stringRet = "";
+
+        for (int i = 0; i < cantBarrios; i++) {
+            if (i > 0) {
+                stringRet += "|";
+            }
+
+            int porcentaje = 0;
+            if (capacidadTotal[i] > 0) {
+                double p = (bicisTotales[i] * 100.0) / capacidadTotal[i];
+                porcentaje = (int) Math.round(p);
+            }
+
+            stringRet += barrios[i] + "#" + porcentaje;
+        }
+
+        return new Retorno(Retorno.Resultado.OK, stringRet);
     }
 
     @Override
@@ -405,7 +518,8 @@ public class Sistema implements IObligatorio {
     }
 
     @Override
-    public Retorno usuariosEnEspera(String nombreEstacion) {
+    public Retorno usuariosEnEspera(String nombreEstacion
+    ) {
         return Retorno.noImplementada();
     }
 
@@ -414,12 +528,26 @@ public class Sistema implements IObligatorio {
         return Retorno.noImplementada();
     }
 
-    /**
-     *
-     * @param e
-     */
     public void agregarEstacion(Estacion e) {
         listaEstaciones.agregarOrdenado(e);
+    }
+
+    public void agregarBicicleta(Bicicleta b) {
+        listaBicicletas.agregarOrdenado(b);
+    }
+
+    public void agregarAlquiler(Alquiler a) {
+        pilaRetiros.apilar(a);
+    }
+    
+        public Bicicleta buscarBiciPorCodigo(String codigo) {
+        Bicicleta b = new Bicicleta(codigo, "biciAux");
+
+        if (listaBicicletas.existeElemento(b)) {
+            b = listaBicicletas.buscarElemento(b);
+            return b;
+        }
+        return null;
     }
 
     //PARA LA ESTRUCTURA DEL DIAGRAMA

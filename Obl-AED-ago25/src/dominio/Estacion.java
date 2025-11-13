@@ -9,9 +9,10 @@ public class Estacion implements Comparable<Estacion> {
     private String nombre;
     private String barrio;
     private int capacidad;
+    private int anclajesLibres = 5;
     private Pila<Bicicleta> pilaBicicletas; //Nunca va a ser mas de 5 
     private Cola<Usuario> usuariosEnEspera;
-    private Cola<Bicicleta> colaAnclaje;
+    private Cola<Usuario> colaAnclaje;
 
     public Estacion(String unNombre, String unBarrio, int unaCapacidad) {
         this.setNombre(unNombre);
@@ -77,12 +78,13 @@ public class Estacion implements Comparable<Estacion> {
         return !pilaBicicletas.esVacia();
     }
 
+    //Las bicis en espera son una cola de Usuarios creeeeo
     public boolean tieneBicisEnEspera() {
         return !colaAnclaje.esVacia();
     }
 
-    public boolean tieneCapacidad() {
-        return pilaBicicletas.cantElementos() < capacidad;
+    public boolean tieneAnclajesLibres() {
+        return anclajesLibres != 0;
     }
 
     public boolean tieneUsuariosEnEspera() {
@@ -90,34 +92,94 @@ public class Estacion implements Comparable<Estacion> {
     }
 
     public void agregarBicicleta(Bicicleta b) {
+
         b.setEstado("Disponible");
-        if (tieneCapacidad()) {
+        if (tieneAnclajesLibres()) {
             // hay lugar en la estación,va a la pila de bicis ancladas
             pilaBicicletas.apilar(b);
-        } else {
-            // está llena va a la cola de Bicis en espera de anclaje
-            colaAnclaje.encolar(b);
         }
+        anclajesLibres--;
     }
 
     public void agregarUsuarioEnEspera(Usuario u) {
         this.usuariosEnEspera.encolar(u);
     }
 
-    public void agregarColaAnclaje(Bicicleta b) {
-        this.colaAnclaje.encolar(b);
+    public void agregarColaAnclaje(Usuario u) {
+        this.colaAnclaje.encolar(u);
+    }
+
+    public int getCantidadBicisAncladas() {
+        return pilaBicicletas.cantElementos();
     }
 
     //Este metodo agarra una bici de la pila, y setea el estado de la bici en "Alquilada" (tambien retorna esa bicicleta)
     public Bicicleta alquilarBicicleta(Usuario u) {
-        if (!pilaBicicletas.esVacia()) {
-            Bicicleta b = pilaBicicletas.top();
 
-            b.setEstado("Alquilada");
-            pilaBicicletas.desapilar();
-            return b;
+        Bicicleta b = pilaBicicletas.top();
+
+        b.setEstado("Alquilada");
+        pilaBicicletas.desapilar();
+        anclajesLibres++;
+
+        return b;
+    }
+
+    //NO ESTOY SEGURO SI LO ESTOY HACIENDO BIEN
+    public String mostrarBicicletasPorCodigo() {
+        int n = pilaBicicletas.cantElementos();
+
+        if (n == 0) {
+            return "La estacion no tiene Bicicletas ancladas";
         }
-        return null;
+        //Creo ListaNodos para ordenar los codigos, y pilaAux para reestructurar la pila original
+        Bicicleta[] arrBicis = new Bicicleta[n];
+        Pila<Bicicleta> pilaAux = new Pila<>();
+
+        int i = 0;
+
+        // 1) Recorro la pila UNA sola vez
+        while (!pilaBicicletas.esVacia()) {
+            Bicicleta b = pilaBicicletas.top();
+            pilaBicicletas.desapilar();
+
+            // Guardo cada bici en un array
+            arrBicis[i] = b;
+            i++;
+
+            // Guardo en pilaAux para rearmar la original
+            pilaAux.apilar(b);
+        }
+
+        // 2) Restaura la pila original
+        while (!pilaAux.esVacia()) {
+            Bicicleta b = pilaAux.top();
+            pilaAux.desapilar();
+            pilaBicicletas.apilar(b);
+        }
+
+        // 3) Ordeno el array por código (insertion sort)
+        for (int j = 1; j < n; j++) {
+            Bicicleta clave = arrBicis[j];
+            int k = j - 1;
+            while (k >= 0 && arrBicis[k].getCodigo().compareTo(clave.getCodigo()) > 0) {
+                arrBicis[k + 1] = arrBicis[k];
+                k--;
+            }
+            arrBicis[k + 1] = clave;
+        }
+
+        // 4) Armo el String con los codigos
+        String stringRet = "";
+        for (int j = 0; j < n; j++) {
+            if (j > 0) {
+                stringRet += ("|");
+            }
+            stringRet += arrBicis[j].getCodigo();
+        }
+
+        return stringRet;
+
     }
 
 }
