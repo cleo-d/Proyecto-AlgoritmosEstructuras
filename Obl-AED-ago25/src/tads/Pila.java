@@ -81,5 +81,24 @@ public class Pila<T extends Comparable> implements IPila<T> {
     public T top() {
          return inicio.getDato();
     }
+    
+        public Pila copiarPila(Pila p) {
+
+        Pila aux = new Pila();
+        Pila ret = new Pila();
+
+        while (!p.esVacia()) {
+            aux.apilar(p.top());
+            p.desapilar();
+        }
+        
+
+        while (!aux.esVacia()) {
+            ret.apilar(aux.top());
+            p.apilar(aux.top());
+            aux.desapilar();
+        }
+        return ret;
+    }
 
 }
