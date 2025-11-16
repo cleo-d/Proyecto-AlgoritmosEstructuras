@@ -518,9 +518,18 @@ public class Sistema implements IObligatorio {
     }
 
     @Override
-    public Retorno usuariosEnEspera(String nombreEstacion
-    ) {
-        return Retorno.noImplementada();
+    public Retorno usuariosEnEspera(String nombreEstacion) {
+
+        Estacion e = new Estacion(nombreEstacion, "barrioAux", 5);
+        //Busco la estacion en el sistema
+        if(!listaEstaciones.existeElemento(e)){
+            return new Retorno(Retorno.Resultado.OK, "La estacion no existe en el sistema") ;
+        }
+        e = listaEstaciones.buscarElemento(e);
+        
+        String stringRet = e.usuariosEnEspera();
+        
+        return new Retorno(Retorno.Resultado.OK, stringRet);
     }
 
     @Override
@@ -539,8 +548,8 @@ public class Sistema implements IObligatorio {
     public void agregarAlquiler(Alquiler a) {
         pilaRetiros.apilar(a);
     }
-    
-        public Bicicleta buscarBiciPorCodigo(String codigo) {
+
+    public Bicicleta buscarBiciPorCodigo(String codigo) {
         Bicicleta b = new Bicicleta(codigo, "biciAux");
 
         if (listaBicicletas.existeElemento(b)) {
