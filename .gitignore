@@ -1,0 +1,12 @@
+# Java compiled classes
+*.class
+
+# NetBeans project (inside Obl-AED-ago25)
+Obl-AED-ago25/build/
+Obl-AED-ago25/dist/
+Obl-AED-ago25/nbbuild/
+Obl-AED-ago25/nbdist/
+Obl-AED-ago25/nbproject/private/
+
+# Logs
+*.log
