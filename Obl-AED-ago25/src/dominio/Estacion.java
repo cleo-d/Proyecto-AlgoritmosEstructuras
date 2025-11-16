@@ -2,25 +2,26 @@ package dominio;
 
 import tads.Cola;
 import tads.ListaNodos;
+import tads.Pila;
 
 public class Estacion implements Comparable<Estacion> {
 
     private String nombre;
     private String barrio;
     private int capacidad;
-    //No estoy seguro si deberia inluir una lista de Bicicletas aca 
-    private ListaNodos<Bicicleta> listaBicicletas;
-    //esta lista seria una cola que se utiliza para mantener un orden en los usuarios que quieren
-    //retirar una bici cuando no hay una disponible en en anclaje
+    private int anclajesLibres = 5;
+    private Pila<Bicicleta> pilaBicicletas; //Nunca va a ser mas de 5 
     private Cola<Usuario> usuariosEnEspera;
+    private Cola<Usuario> colaAnclaje;
 
     public Estacion(String unNombre, String unBarrio, int unaCapacidad) {
         this.setNombre(unNombre);
         this.setBarrio(unBarrio);
         this.setCapacidad(unaCapacidad);
-        //Si las instancias creadas de Estacion incluyen una lista de bicicletas deberia tener lo siguiente:
-        listaBicicletas = new ListaNodos();
+
+        pilaBicicletas = new Pila();
         usuariosEnEspera = new Cola();
+        colaAnclaje = new Cola();
 
     }
 
@@ -71,6 +72,141 @@ public class Estacion implements Comparable<Estacion> {
     @Override
     public int compareTo(Estacion o) {
         return this.getNombre().compareToIgnoreCase(o.getNombre());
+    }
+
+    public boolean tieneBicicletasAncladas() {
+        return !pilaBicicletas.esVacia();
+    }
+
+    //Las bicis en espera son una cola de Usuarios creeeeo
+    public boolean tieneBicisEnEspera() {
+        return !colaAnclaje.esVacia();
+    }
+
+    public boolean tieneAnclajesLibres() {
+        return anclajesLibres != 0;
+    }
+
+    public boolean tieneUsuariosEnEspera() {
+        return !usuariosEnEspera.esVacia();
+    }
+
+    public void agregarBicicleta(Bicicleta b) {
+
+        b.setEstado("Disponible");
+        if (tieneAnclajesLibres()) {
+            // hay lugar en la estación,va a la pila de bicis ancladas
+            pilaBicicletas.apilar(b);
+        }
+        anclajesLibres--;
+    }
+
+    public void agregarUsuarioEnEspera(Usuario u) {
+        this.usuariosEnEspera.encolar(u);
+    }
+
+    public void agregarColaAnclaje(Usuario u) {
+        this.colaAnclaje.encolar(u);
+    }
+
+    public int getCantidadBicisAncladas() {
+        return pilaBicicletas.cantElementos();
+    }
+
+    //Este metodo agarra una bici de la pila, y setea el estado de la bici en "Alquilada" (tambien retorna esa bicicleta)
+    public Bicicleta alquilarBicicleta(Usuario u) {
+
+        Bicicleta b = pilaBicicletas.top();
+
+        b.setEstado("Alquilada");
+        pilaBicicletas.desapilar();
+        anclajesLibres++;
+
+        return b;
+    }
+
+    //NO ESTOY SEGURO SI LO ESTOY HACIENDO BIEN
+    public String mostrarBicicletasPorCodigo() {
+        int n = pilaBicicletas.cantElementos();
+
+        if (n == 0) {
+            return "La estacion no tiene Bicicletas ancladas";
+        }
+        //Creo ListaNodos para ordenar los codigos, y pilaAux para reestructurar la pila original
+        Bicicleta[] arrBicis = new Bicicleta[n];
+        Pila<Bicicleta> pilaAux = new Pila<>();
+
+        int i = 0;
+
+        // 1) Recorro la pila UNA sola vez
+        while (!pilaBicicletas.esVacia()) {
+            Bicicleta b = pilaBicicletas.top();
+            pilaBicicletas.desapilar();
+
+            // Guardo cada bici en un array
+            arrBicis[i] = b;
+            i++;
+
+            // Guardo en pilaAux para rearmar la original
+            pilaAux.apilar(b);
+        }
+
+        // 2) Restaura la pila original
+        while (!pilaAux.esVacia()) {
+            Bicicleta b = pilaAux.top();
+            pilaAux.desapilar();
+            pilaBicicletas.apilar(b);
+        }
+
+        // 3) Ordeno el array por código (insertion sort)
+        for (int j = 1; j < n; j++) {
+            Bicicleta clave = arrBicis[j];
+            int k = j - 1;
+            while (k >= 0 && arrBicis[k].getCodigo().compareTo(clave.getCodigo()) > 0) {
+                arrBicis[k + 1] = arrBicis[k];
+                k--;
+            }
+            arrBicis[k + 1] = clave;
+        }
+
+        // 4) Armo el String con los codigos
+        String stringRet = "";
+        for (int j = 0; j < n; j++) {
+            if (j > 0) {
+                stringRet += ("|");
+            }
+            stringRet += arrBicis[j].getCodigo();
+        }
+
+        return stringRet;
+
+    }
+
+    public String usuariosEnEspera() {
+        String stringRet = "";
+
+        int cantUsuarios = this.usuariosEnEspera.cantElementos();
+
+        if (cantUsuarios == 0) {
+            return "No hay usuarios en espera";
+
+        } else {
+            Cola<Usuario> colaAux = new Cola();
+
+            for (int i = 0; i < cantUsuarios; i++) {
+                Usuario aux = usuariosEnEspera.frente();
+                colaAux.encolar(aux);
+                stringRet += aux.getNombre() + "|";
+                usuariosEnEspera.desencolar();
+            }
+
+            for (int i = 0; i < cantUsuarios; i++) {
+                Usuario aux2 = colaAux.frente();
+                usuariosEnEspera.encolar(aux2);
+            }
+        }
+
+        return stringRet;
     }
 
 }

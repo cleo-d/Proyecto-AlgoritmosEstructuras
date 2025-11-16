@@ -7,10 +7,12 @@ public class Nodo<T extends Comparable> {
     
     private T dato;
     private Nodo siguiente;
+    private Nodo anterior;
     
     public Nodo(T elDato){
         dato = elDato;
         siguiente = null;
+        anterior = null;
     }
 
     Nodo() {
@@ -31,6 +33,20 @@ public class Nodo<T extends Comparable> {
 
     public void setSiguiente(Nodo siguiente) {
         this.siguiente = siguiente;
+    }
+
+    /**
+     * @return the anterior
+     */
+    public Nodo getAnterior() {
+        return anterior;
+    }
+
+    /**
+     * @param anterior the anterior to set
+     */
+    public void setAnterior(Nodo anterior) {
+        this.anterior = anterior;
     }
     
 }

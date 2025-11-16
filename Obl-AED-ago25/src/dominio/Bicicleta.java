@@ -6,8 +6,6 @@ public class Bicicleta implements Comparable<Bicicleta> {
 
     private String codigo;
     private String tipo;
-    
-    //El estado podria controlar si esta en mantenimiento/ si esta disponible para alquilar (podria ser un enum)
     private String estado;
 
     public Bicicleta(String unCodigo, String unTipo) {

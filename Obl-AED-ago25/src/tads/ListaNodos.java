@@ -2,7 +2,6 @@ package tads;
 
 public class ListaNodos<T extends Comparable> implements ILista<T> {
 
-
     private Nodo inicio;
     private Nodo fin;
     private int cantElementos;
@@ -64,12 +63,14 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
 
         if (esVacia()) {
             fin = nuevo;
+            inicio = nuevo;
+        } else {
+            nuevo.setSiguiente(inicio);
+            inicio.setAnterior(nuevo);
+            inicio = nuevo;
         }
 
-        nuevo.setSiguiente(getInicio());
-        setInicio(nuevo);
         cantElementos++;
-
     }
 
     @Override
@@ -79,6 +80,7 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
         } else {
             Nodo nuevo = new Nodo(n);
             fin.setSiguiente(nuevo);
+            nuevo.setAnterior(fin);
             fin = nuevo;
             cantElementos++;
         }
@@ -88,29 +90,31 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
     public void borrarInicio() {
         if (!esVacia()) {
 
-            Nodo aBorrar = getInicio();
-            setInicio(getInicio().getSiguiente());
-            aBorrar.setSiguiente(null);
-            cantElementos--;
+            if (inicio == fin) {
+                vaciar();
+            } else {
+                Nodo aBorrar = inicio;
+                inicio = inicio.getSiguiente();
+                inicio.setAnterior(null);
+                aBorrar.setSiguiente(null);
+                cantElementos--;
+            }
         }
     }
 
     @Override
     public void borrarFin() {
-
         if (!esVacia()) {
-
-            if (getInicio().getSiguiente() == null) { //solo tengo 1
+            if (inicio.getSiguiente() == null) { //uno solo
                 vaciar();
             } else {
-                Nodo aux = getInicio();
 
-                while (aux.getSiguiente().getSiguiente() != null) {
-                    aux = aux.getSiguiente();
-                }
-
-                aux.setSiguiente(null);
+                Nodo aBorrar = fin;
+                fin = fin.getAnterior();
+                fin.setSiguiente(null);
+                aBorrar.setAnterior(null);
                 cantElementos--;
+
             }
         }
     }
@@ -153,6 +157,22 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
 
     
 
+    //metodo para respetar el tema de caja negra con usuarios
+    public String concatenar(String separador) {
+        String resultado = "";
+        Nodo<T> aux = inicio;
+
+        while (aux != null) {
+            resultado += aux.getDato();
+            aux = aux.getSiguiente();
+            if (aux != null) {
+                resultado += separador;
+            }
+        }
+
+        return resultado;
+    }
+
     @Override
     public int cantElementos() {
         return cantElementos;
@@ -194,8 +214,8 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
         }
 
     }
-    
-        public Nodo getInicio() {
+
+    public Nodo getInicio() {
         return inicio;
     }
 
@@ -208,25 +228,64 @@ public class ListaNodos<T extends Comparable> implements ILista<T> {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    
-    
     //metodos para seguir respetando caja negra en listarBicisDeposito
     public String listarRecursivo(String separador) {
-    return listarRecursivoInterno(inicio, separador);
-}
-
-private String listarRecursivoInterno(Nodo<T> nodo, String separador) {
-    if (nodo == null) {
-        return "";
+        return listarRecursivoInterno(inicio, separador);
     }
 
-    String actual = nodo.getDato().toString();
+    private String listarRecursivoInterno(Nodo<T> nodo, String separador) {
+        if (nodo == null) {
+            return "";
+        }
 
-    if (nodo.getSiguiente() != null) {
-        return actual + separador + listarRecursivoInterno(nodo.getSiguiente(), separador);
-    } else {
-        return actual;
+        String actual = nodo.getDato().toString();
+
+        if (nodo.getSiguiente() != null) {
+            return actual + separador + listarRecursivoInterno(nodo.getSiguiente(), separador);
+        } else {
+            return actual;
+        }
     }
-}
+
+    //HAY QUE TESTEAR ESTE METODO
+    public void borrarElemento(T o) {
+        if (esVacia()) {
+            return;
+        }
+
+        Nodo<T> actual = inicio;
+
+        while (actual != null) {
+            if (actual.getDato().equals(o)) {
+
+                // Caso 1: es el único nodo
+                if (actual == inicio && actual == fin) {
+                    inicio = null;
+                    fin = null;
+                } // Caso 2: es el primer nodo (pero hay más)
+                else if (actual == inicio) {
+                    inicio = actual.getSiguiente();
+                    if (inicio != null) {
+                        inicio.setAnterior(null);
+                    }
+                } // Caso 3: es el último nodo (pero hay más)
+                else if (actual == fin) {
+                    fin = actual.getAnterior();
+                    if (fin != null) {
+                        fin.setSiguiente(null);
+                    }
+                } // Caso 4: está en el medio
+                else {
+                    actual.getAnterior().setSiguiente(actual.getSiguiente());
+                    actual.getSiguiente().setAnterior(actual.getAnterior());
+                }
+
+                cantElementos--;
+                return; // borramos solo la primera coincidencia
+            }
+
+            actual = actual.getSiguiente();
+        }
+    }
 
 }
