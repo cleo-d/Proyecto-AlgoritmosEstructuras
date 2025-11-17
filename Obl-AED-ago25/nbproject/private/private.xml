@@ -3,11 +3,29 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/mateo/OneDrive/Desktop/E-234464-1/Obl-AED-ago25/src/dominio/Alquiler.java</file>
-            <file>file:/C:/Users/mateo/OneDrive/Desktop/E-234464-1/Obl-AED-ago25/src/sistemaAutogestion/Sistema.java</file>
-            <file>file:/C:/Users/mateo/OneDrive/Desktop/E-234464-1/Obl-AED-ago25/src/dominio/Estacion.java</file>
-            <file>file:/C:/Users/mateo/OneDrive/Desktop/E-234464-1/Obl-AED-ago25/src/dominio/Bicicleta.java</file>
-            <file>file:/C:/Users/mateo/OneDrive/Desktop/E-234464-1/Obl-AED-ago25/src/dominio/Usuario.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/dominio/Alquiler.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/dominio/Bicicleta.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/dominio/Estacion.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/dominio/Usuario.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/sistemaAutogestion/Prueba.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/sistemaAutogestion/Sistema.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/tads/Cola.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/tads/ListaNodos.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/tads/Nodo.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/tads/Pila.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test2_07EliminarEstacion.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test2_08AsignarBicicletaAEstacion.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test2_09AlquilarBicicleta.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test2_11DeshacerUltimosRetiros.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test3_05ListarBicicletasDeEstacion.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test3_07OcupacionPromedioXBarrio.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test2_10DevolverBicicleta.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test2_05MarcarEnMantenimiento.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test3_03ListarBicicletasEnDeposito.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/src/sistemaAutogestion/Retorno.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test3_06EstacionesConDisponibilidad.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test3_08RankingTiposPorUso.java</file>
+            <file>file:/C:/Users/mateo/OneDrive/Desktop/ProyectoAED/Proyecto-AlgoritmosEstructuras/Obl-AED-ago25/test/sistemaAutogestion/Test3_10UsuarioMayor.java</file>
         </group>
     </open-files>
 </project-private>

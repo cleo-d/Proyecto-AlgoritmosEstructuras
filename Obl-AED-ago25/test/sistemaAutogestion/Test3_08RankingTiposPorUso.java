@@ -20,7 +20,7 @@ public class Test3_08RankingTiposPorUso {
         s.registrarUsuario("44444444", "U4");
 
         // Registrar estaciones
-        s.registrarEstacion("E1", "Centro", 10);
+        s.registrarEstacion("E1", "Centro", 5);
 
         // Registrar bicis
         s.registrarBicicleta("AAA111", "URBANA");

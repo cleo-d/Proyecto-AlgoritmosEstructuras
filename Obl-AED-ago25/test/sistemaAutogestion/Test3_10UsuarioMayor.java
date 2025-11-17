@@ -73,7 +73,7 @@ public class Test3_10UsuarioMayor {
     @Test
     public void usuarioMayorOK() {
 
-        // Empate U1=3 alquileres, U2=3 alquileres → gana menor cedula: "40000001"
+        // Empate U1=3 alquileres, U2=3 alquileres gana menor cedula: "40000001"
         retorno = s.usuarioMayor();
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());

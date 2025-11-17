@@ -92,13 +92,13 @@ public class Estacion implements Comparable<Estacion> {
     }
 
     public void agregarBicicleta(Bicicleta b) {
-        b.setEstado("Disponible");
-        if (tieneAnclajesLibres()) {
-            // hay lugar en la estación,va a la pila de bicis ancladas
-            pilaBicicletas.apilar(b);
-        }
-        anclajesLibres--;
-    }
+    if (!tieneAnclajesLibres()) return;
+
+    pilaBicicletas.apilar(b);
+    anclajesLibres--;
+    b.setEstado("Disponible");
+}
+
 
     public void agregarUsuarioEnEspera(Usuario u) {
         this.usuariosEnEspera.encolar(u);

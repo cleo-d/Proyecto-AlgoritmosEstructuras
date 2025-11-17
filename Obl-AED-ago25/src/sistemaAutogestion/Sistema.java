@@ -596,15 +596,16 @@ public Retorno estacionesConDisponibilidad(int n) {
     @Override
 public Retorno rankingTiposPorUso() {
 
+    // Si no hay retiros → retorno vacío
     if (pilaRetiros.esVacia()) {
         return Retorno.ok("");
     }
 
-    int cantUrbana = 0;
-    int cantMountain = 0;
-    int cantElectrica = 0;
+    int cUrbana = 0;
+    int cMountain = 0;
+    int cElectrica = 0;
 
-    // Necesitamos recorrer la pila SIN destruirla
+    // Recorro pila sin destruirla
     Pila<Alquiler> aux = new Pila<>();
 
     while (!pilaRetiros.esVacia()) {
@@ -612,54 +613,51 @@ public Retorno rankingTiposPorUso() {
         pilaRetiros.desapilar();
         aux.apilar(a);
 
-        Bicicleta b = a.getBici();
-        String tipo = b.getTipo().toUpperCase();
+        String tipo = a.getBici().getTipo().toUpperCase();
 
-        if (tipo.equals("URBANA")) cantUrbana++;
-        else if (tipo.equals("MOUNTAIN")) cantMountain++;
-        else if (tipo.equals("ELECTRICA")) cantElectrica++;
+        if (tipo.equals("URBANA")) cUrbana++;
+        else if (tipo.equals("MOUNTAIN")) cMountain++;
+        else if (tipo.equals("ELECTRICA")) cElectrica++;
     }
 
-    // restaurar pila original
+    // restaurar
     while (!aux.esVacia()) {
         pilaRetiros.apilar(aux.top());
         aux.desapilar();
     }
 
-    // Ahora armamos un array de tuplas
-    class TipoCant {
-        String tipo;
-        int cant;
-        TipoCant(String t, int c){ tipo=t; cant=c; }
-    }
+    // Crear arreglos paralelos simples
+    String[] tipos = {"URBANA", "MOUNTAIN", "ELECTRICA"};
+    int[] cant = {cUrbana, cMountain, cElectrica};
 
-    TipoCant[] arr = {
-        new TipoCant("URBANA", cantUrbana),
-        new TipoCant("MOUNTAIN", cantMountain),
-        new TipoCant("ELECTRICA", cantElectrica)
-    };
+    // Ordenar los 3 elementos
+    // Orden por cantidad DESC, si empatan → alfabético DESC
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2 - i; j++) {
+            if ( cant[j] < cant[j+1] ||
+                (cant[j] == cant[j+1] && tipos[j].compareTo(tipos[j+1]) < 0) ) {
 
-    // Ordenamos por cantidad desc, y alfabético asc
-    for (int i = 0; i < 3 - 1; i++) {
-        for (int j = 0; j < 3 - 1 - i; j++) {
-            if (arr[j].cant < arr[j+1].cant ||
-                (arr[j].cant == arr[j+1].cant &&
-                 arr[j].tipo.compareTo(arr[j+1].tipo) > 0)) {
+                // swap cantidades
+                int tmpC = cant[j];
+                cant[j] = cant[j+1];
+                cant[j+1] = tmpC;
 
-                TipoCant tmp = arr[j];
-                arr[j] = arr[j+1];
-                arr[j+1] = tmp;
+                // swap tipos
+                String tmpT = tipos[j];
+                tipos[j] = tipos[j+1];
+                tipos[j+1] = tmpT;
             }
         }
     }
 
-    // Armar string de salida
-    String ret = arr[0].tipo + "#" + arr[0].cant
-               + "|" + arr[1].tipo + "#" + arr[1].cant
-               + "|" + arr[2].tipo + "#" + arr[2].cant;
+    // Construcción del string final
+    String salida = tipos[0] + "#" + cant[0]
+                  + "|" + tipos[1] + "#" + cant[1]
+                  + "|" + tipos[2] + "#" + cant[2];
 
-    return Retorno.ok(ret);
+    return Retorno.ok(salida);
 }
+
 
 
 
@@ -682,7 +680,7 @@ public Retorno usuarioMayor() {
     Pila<Alquiler> pilaAux = new Pila<>();
     int cantUsuarios = listaUsuarios.cantElementos();
 
-    //arreglos paralelos: usuario y contador
+   
     Usuario[] usuarios = new Usuario[cantUsuarios];
     int[] contador = new int[cantUsuarios];
 
