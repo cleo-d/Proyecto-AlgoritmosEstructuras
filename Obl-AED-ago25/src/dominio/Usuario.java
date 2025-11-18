@@ -4,12 +4,11 @@ public class Usuario implements Comparable<Usuario> {
 
     private String cedula;
     private String nombre;
-    private Bicicleta biciAlquilada;
+   
 
     public Usuario(String unaCedula, String unNombre) {
         this.setCedula(unaCedula);
         this.setNombre(unNombre);
-        this.biciAlquilada = null;
     }
 
     public String getCedula() {
@@ -73,17 +72,4 @@ public class Usuario implements Comparable<Usuario> {
     
 }
 
-    /**
-     * @return the biciAlquilada
-     */
-    public Bicicleta getBiciAlquilada() {
-        return biciAlquilada;
-    }
-
-    /**
-     * @param biciAlquilada the biciAlquilada to set
-     */
-    public void setBiciAlquilada(Bicicleta biciAlquilada) {
-        this.biciAlquilada = biciAlquilada;
-    }
 }

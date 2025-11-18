@@ -61,7 +61,7 @@ public class Sistema implements IObligatorio {
             return Retorno.error3();
         } else {
             listaUsuarios.agregarOrdenado(u);
-            listaUsuarios.mostrar();
+          //  listaUsuarios.mostrar();
             return Retorno.ok();
         }
     }
@@ -95,7 +95,7 @@ public class Sistema implements IObligatorio {
         if (codigo == null || codigo.trim().isEmpty() || motivo == null || motivo.trim().isEmpty()) {
             return Retorno.error1();
         }
-        
+
         //Busco la bici en el elistado
         Bicicleta b = new Bicicleta(codigo, "tipoAux");
 
@@ -209,113 +209,128 @@ public class Sistema implements IObligatorio {
     }
 
     @Override
-public Retorno alquilarBicicleta(String cedula, String nombreEstacion) {
+    public Retorno alquilarBicicleta(String cedula, String nombreEstacion) {
 
-    //Valido los parametros recibidos
-    if (cedula == null || cedula.trim().isEmpty() || nombreEstacion == null || nombreEstacion.trim().isEmpty()) {
-        return Retorno.error1();
+        //Valido los parametros recibidos
+        if (cedula == null || cedula.trim().isEmpty() || nombreEstacion == null || nombreEstacion.trim().isEmpty()) {
+            return Retorno.error1();
+        }
+
+        //Creo usuario auxiliar para validar si existe en el sistema
+        Usuario u = new Usuario(cedula, "usuarioAux");
+        //Primero valido si existe el usuario en la lista
+        if (!listaUsuarios.existeElemento(u)) {
+            return Retorno.error2();
+        } else {
+            //En caso que exista lo busco de la lista y lo guardo en u
+            u = listaUsuarios.buscarElemento(u);
+        }
+
+        //Creo Estacion auxiliar para validar si existe en el sistema
+        Estacion e = new Estacion(nombreEstacion, "barrioAux", 5);
+        //Valido si existe la estacion en la lista
+        if (!listaEstaciones.existeElemento(e)) {
+            return Retorno.error3();
+        } else {
+            //en caso que exista lo guardo en e
+            e = listaEstaciones.buscarElemento(e);
+        }
+
+        if (e.tieneBicicletasAncladas()) {
+            Bicicleta b = e.alquilarBicicleta(u);
+             b.setEstado("Alquilada");
+            Alquiler a = new Alquiler(u, b, e);
+            //Creo un registro de Alquiler en sistema
+            this.agregarAlquiler(a);
+            return Retorno.ok();
+
+        } else {
+            e.agregarUsuarioEnEspera(u);
+            return Retorno.ok();
+        }
+
     }
-
-    //Creo usuario auxiliar para validar si existe en el sistema
-    Usuario u = new Usuario(cedula, "usuarioAux");
-    //Primero valido si existe el usuario en la lista
-    if (!listaUsuarios.existeElemento(u)) {
-        return Retorno.error2();
-    } else {
-        //En caso que exista lo busco de la lista y lo guardo en u
-        u = listaUsuarios.buscarElemento(u);
-    }
-
-    
-    // Agregue validacion de que el usuario no tegna ya un alquiler de bici
-    if (u.getBiciAlquilada() != null) {
-        return Retorno.error2();
-    }
-    
-
-    //Creo Estacion auxiliar para validar si existe en el sistema
-    Estacion e = new Estacion(nombreEstacion, "barrioAux", 5);
-    //Valido si existe la estacion en la lista
-    if (!listaEstaciones.existeElemento(e)) {
-        return Retorno.error3();
-    } else {
-        //en caso que exista lo guardo en e
-        e = listaEstaciones.buscarElemento(e);
-    }
-
-    if (e.tieneBicicletasAncladas()) {
-        Bicicleta b = e.alquilarBicicleta(u);
-        u.setBiciAlquilada(b); //aca le seteamos una bici al usuario
-        Alquiler a = new Alquiler(u, b, e);
-        //Creo un registro de Alquiler en sistema
-        this.agregarAlquiler(a);
-        return Retorno.ok();
-
-    } else {
-        e.agregarUsuarioEnEspera(u);
-        return Retorno.ok();
-    }
-
-}
-
 
     @Override
 public Retorno devolverBicicleta(String cedula, String nombreEstacionDestino) {
 
-    //valido datos
+    // valido datos
     if (cedula == null || cedula.trim().isEmpty()
         || nombreEstacionDestino == null || nombreEstacionDestino.trim().isEmpty()) {
         return Retorno.error1();
     }
 
-    //busco al usuario
-    Usuario usu = new Usuario(cedula, "");
-    if (!listaUsuarios.existeElemento(usu)) {
+    // busco usuario
+    Usuario auxU = new Usuario(cedula, "");
+    if (!listaUsuarios.existeElemento(auxU)) {
         return Retorno.error2();
     }
-    Usuario u = listaUsuarios.buscarElemento(usu);
+    Usuario u = listaUsuarios.buscarElemento(auxU);
 
-    //busco la estacion
-    Estacion est = new Estacion(nombreEstacionDestino, "", 0);
-    if (!listaEstaciones.existeElemento(est)) {
+    // busco estacion destino
+    Estacion auxE = new Estacion(nombreEstacionDestino, "", 0);
+    if (!listaEstaciones.existeElemento(auxE)) {
         return Retorno.error3();
     }
-    Estacion e = listaEstaciones.buscarElemento(est);
+    Estacion eDestino = listaEstaciones.buscarElemento(auxE);
 
-    //veo si el usuario ya aquilo bici
-    if (u.getBiciAlquilada() == null) {
+    // recorro pila de alquileres para encontrar la bici alquilada
+    Pila<Alquiler> aux = new Pila<>();
+    Bicicleta bici = null;
+
+    while (!pilaRetiros.esVacia()) {
+
+        Alquiler a = pilaRetiros.top();
+        pilaRetiros.desapilar();
+        aux.apilar(a);
+
+        // si coincide el usuario
+        if (a.getUsuario().equals(u)) {
+            // si la bici aun esta alquilada
+            if (a.getBici().getEstado().equals("Alquilada")) {
+                bici = a.getBici();
+                a.getEstacion();
+            }
+        }
+    }
+
+    // restauro la pila original
+    while (!aux.esVacia()) {
+        pilaRetiros.apilar(aux.top());
+        aux.desapilar();
+    }
+
+    // si no encontre alquiler activo
+    if (bici == null) {
         return Retorno.error2();
     }
 
-    Bicicleta bici = u.getBiciAlquilada();
+    // si hay anclajes libres
+    if (eDestino.tieneAnclajesLibres()) {
 
-    //veo si hay lugar libre para anclar bici
-    if (e.tieneAnclajesLibres()) {
-
-        e.agregarBicicleta(bici);
+        // la bici vuelve a estar disponible
         bici.setEstado("Disponible");
-        u.setBiciAlquilada(null);
+        eDestino.agregarBicicleta(bici);
 
-        //si hay usuarios esperando bici se entrega automáticamente
-        if (e.tieneUsuariosEnEspera() && e.tieneBicicletasAncladas()) {
+        // reviso si hay usuarios esperando
+        if (eDestino.tieneUsuariosEnEspera()) {
+            if (eDestino.tieneBicicletasAncladas()) {
 
-            Usuario uEsperando = e.getPrimerUsuarioEnEspera();
-            e.quitarUsuarioEnEspera();
+                Usuario uEsp = eDestino.getPrimerUsuarioEnEspera();
+                eDestino.quitarUsuarioEnEspera();
 
-            Bicicleta bEntregada = e.alquilarBicicleta(uEsperando);
-            uEsperando.setBiciAlquilada(bEntregada);
-
-            pilaRetiros.apilar(new Alquiler(uEsperando, bEntregada, e));
+                Bicicleta bNueva = eDestino.alquilarBicicleta(uEsp);
+                pilaRetiros.apilar(new Alquiler(uEsp, bNueva, eDestino));
+            }
         }
 
         return Retorno.ok();
     }
 
-    //si no hay lugar libre debe esperar
-    e.agregarColaAnclaje(u);
+    // si no hay lugar queda en cola de anclaje
+    eDestino.agregarColaAnclaje(u);
     return Retorno.ok();
 }
-
 
 
     @Override
@@ -485,27 +500,26 @@ public Retorno devolverBicicleta(String cedula, String nombreEstacionDestino) {
     }
 
     @Override
-public Retorno estacionesConDisponibilidad(int n) {
+    public Retorno estacionesConDisponibilidad(int n) {
 
-    //valido que sea mayor a 1
-    if (n <= 1) {
-        return Retorno.error1();
-    }
-
-    int cantidad = 0;
-
-    //recorro estaciones
-    for (int i = 0; i < listaEstaciones.cantElementos(); i++) {
-        Estacion e = listaEstaciones.obtenerElementoDePos(i);
-
-        if (e.getCantidadBicisAncladas() > n) {
-            cantidad++;
+        //valido que sea mayor a 1
+        if (n <= 1) {
+            return Retorno.error1();
         }
+
+        int cantidad = 0;
+
+        //recorro estaciones
+        for (int i = 0; i < listaEstaciones.cantElementos(); i++) {
+            Estacion e = listaEstaciones.obtenerElementoDePos(i);
+
+            if (e.getCantidadBicisAncladas() > n) {
+                cantidad++;
+            }
+        }
+
+        return Retorno.ok(cantidad);
     }
-
-    return Retorno.ok(cantidad);
-}
-
 
     @Override
     public Retorno ocupacionPromedioXBarrio() {
@@ -594,152 +608,160 @@ public Retorno estacionesConDisponibilidad(int n) {
     }
 
     @Override
-public Retorno rankingTiposPorUso() {
+    public Retorno rankingTiposPorUso() {
 
-    // Si no hay retiros → retorno vacío
-    if (pilaRetiros.esVacia()) {
-        return Retorno.ok("");
-    }
+        // Si no hay retiros retorno vacío
+        if (pilaRetiros.esVacia()) {
+            return Retorno.ok("");
+        }
 
-    int cUrbana = 0;
-    int cMountain = 0;
-    int cElectrica = 0;
+        int cUrbana = 0;
+        int cMountain = 0;
+        int cElectrica = 0;
 
-    // Recorro pila sin destruirla
-    Pila<Alquiler> aux = new Pila<>();
+        // Recorro pila sin destruirla
+        Pila<Alquiler> aux = new Pila<>();
 
-    while (!pilaRetiros.esVacia()) {
-        Alquiler a = pilaRetiros.top();
-        pilaRetiros.desapilar();
-        aux.apilar(a);
+        while (!pilaRetiros.esVacia()) {
+            Alquiler a = pilaRetiros.top();
+            pilaRetiros.desapilar();
+            aux.apilar(a);
 
-        String tipo = a.getBici().getTipo().toUpperCase();
+            String tipo = a.getBici().getTipo().toUpperCase();
 
-        if (tipo.equals("URBANA")) cUrbana++;
-        else if (tipo.equals("MOUNTAIN")) cMountain++;
-        else if (tipo.equals("ELECTRICA")) cElectrica++;
-    }
-
-    // restaurar
-    while (!aux.esVacia()) {
-        pilaRetiros.apilar(aux.top());
-        aux.desapilar();
-    }
-
-    // Crear arreglos paralelos simples
-    String[] tipos = {"URBANA", "MOUNTAIN", "ELECTRICA"};
-    int[] cant = {cUrbana, cMountain, cElectrica};
-
-    // Ordenar los 3 elementos
-    // Orden por cantidad DESC, si empatan → alfabético DESC
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 2 - i; j++) {
-            if ( cant[j] < cant[j+1] ||
-                (cant[j] == cant[j+1] && tipos[j].compareTo(tipos[j+1]) < 0) ) {
-
-                // swap cantidades
-                int tmpC = cant[j];
-                cant[j] = cant[j+1];
-                cant[j+1] = tmpC;
-
-                // swap tipos
-                String tmpT = tipos[j];
-                tipos[j] = tipos[j+1];
-                tipos[j+1] = tmpT;
+            if (tipo.equals("URBANA")) {
+                cUrbana++;
+            } else if (tipo.equals("MOUNTAIN")) {
+                cMountain++;
+            } else if (tipo.equals("ELECTRICA")) {
+                cElectrica++;
             }
         }
+
+        // restaurar
+        while (!aux.esVacia()) {
+            pilaRetiros.apilar(aux.top());
+            aux.desapilar();
+        }
+
+        // Crear arreglos paralelos simples
+        String[] tipos = {"URBANA", "MOUNTAIN", "ELECTRICA"};
+        int[] cant = {cUrbana, cMountain, cElectrica};
+
+        // Ordenar los 3 elementos
+        // Orden por cantidad DESC, si empatan alfabético DESC
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2 - i; j++) {
+                if (cant[j] < cant[j + 1]
+                        || (cant[j] == cant[j + 1] && tipos[j].compareTo(tipos[j + 1]) < 0)) {
+
+                    // swap cantidades
+                    int tmpC = cant[j];
+                    cant[j] = cant[j + 1];
+                    cant[j + 1] = tmpC;
+
+                    // swap tipos
+                    String tmpT = tipos[j];
+                    tipos[j] = tipos[j + 1];
+                    tipos[j + 1] = tmpT;
+                }
+            }
+        }
+
+        // Construcción del string final
+        String salida = tipos[0] + "#" + cant[0]
+                + "|" + tipos[1] + "#" + cant[1]
+                + "|" + tipos[2] + "#" + cant[2];
+
+        return Retorno.ok(salida);
     }
-
-    // Construcción del string final
-    String salida = tipos[0] + "#" + cant[0]
-                  + "|" + tipos[1] + "#" + cant[1]
-                  + "|" + tipos[2] + "#" + cant[2];
-
-    return Retorno.ok(salida);
-}
-
-
-
 
     @Override
-    public Retorno usuariosEnEspera(String nombreEstacion
-    ) {
-        return Retorno.noImplementada();
+    public Retorno usuariosEnEspera(String nombreEstacion) {
+
+        Estacion e = new Estacion(nombreEstacion, "barrioAux", 5);
+        //Busco la estacion en el sistema
+        if (!listaEstaciones.existeElemento(e)) {
+            return new Retorno(Retorno.Resultado.OK, "La estacion no existe en el sistema");
+        }
+        e = listaEstaciones.buscarElemento(e);
+
+        String stringRet = e.usuariosEnEspera();
+
+        return new Retorno(Retorno.Resultado.OK, stringRet);
     }
 
     @Override
-public Retorno usuarioMayor() {
+    public Retorno usuarioMayor() {
 
-    // Si no hay usuarios, retorno OK vacío
-    if (listaUsuarios.cantElementos() == 0) {
-        return Retorno.ok("");
-    }
+        // Si no hay usuarios, retorno OK vacío
+        if (listaUsuarios.cantElementos() == 0) {
+            return Retorno.ok("");
+        }
 
-    // Necesitamos contar los alquileres de cada usuario
-    // Para eso recorremos pilaRetiros sin destruirla
-    Pila<Alquiler> pilaAux = new Pila<>();
-    int cantUsuarios = listaUsuarios.cantElementos();
+        // Necesitamos contar los alquileres de cada usuario
+        // Para eso recorremos pilaRetiros sin destruirla
+        Pila<Alquiler> pilaAux = new Pila<>();
+        int cantUsuarios = listaUsuarios.cantElementos();
 
-   
-    Usuario[] usuarios = new Usuario[cantUsuarios];
-    int[] contador = new int[cantUsuarios];
+        Usuario[] usuarios = new Usuario[cantUsuarios];
+        int[] contador = new int[cantUsuarios];
 
-    //arreglo de usuarios
-    for (int i = 0; i < cantUsuarios; i++) {
-        usuarios[i] = listaUsuarios.obtenerElementoDePos(i);
-        contador[i] = 0;
-    }
-
-    // Recorremos pilaRetiros SIN perder datos
-    while (!pilaRetiros.esVacia()) {
-
-        Alquiler a = pilaRetiros.top();
-        pilaRetiros.desapilar();
-        pilaAux.apilar(a);
-
-        Usuario uAlq = a.getUsuario();
-
-        // Busco coincidencia en la lista manualmente
+        //arreglo de usuarios
         for (int i = 0; i < cantUsuarios; i++) {
-            if (usuarios[i].equals(uAlq)) {
-                contador[i]++;
+            usuarios[i] = listaUsuarios.obtenerElementoDePos(i);
+            contador[i] = 0;
+        }
+
+        // Recorremos pilaRetiros SIN perder datos
+        while (!pilaRetiros.esVacia()) {
+
+            Alquiler a = pilaRetiros.top();
+            pilaRetiros.desapilar();
+            pilaAux.apilar(a);
+
+            Usuario uAlq = a.getUsuario();
+
+            // Busco coincidencia en la lista manualmente
+            for (int i = 0; i < cantUsuarios; i++) {
+                if (usuarios[i].equals(uAlq)) {
+                    contador[i]++;
+                }
             }
         }
-    }
 
-    // Restauramos la pila original
-    while (!pilaAux.esVacia()) {
-        pilaRetiros.apilar(pilaAux.top());
-        pilaAux.desapilar();
-    }
+        // Restauramos la pila original
+        while (!pilaAux.esVacia()) {
+            pilaRetiros.apilar(pilaAux.top());
+            pilaAux.desapilar();
+        }
 
-    // busco quien tiene mas y si empatan el de cedula menor
-    int max = -1;
-    Usuario mejor = null;
+        // busco quien tiene mas y si empatan el de cedula menor
+        int max = -1;
+        Usuario mejor = null;
 
-    for (int i = 0; i < cantUsuarios; i++) {
+        for (int i = 0; i < cantUsuarios; i++) {
 
-        int cant = contador[i];
-        Usuario actual = usuarios[i];
+            int cant = contador[i];
+            Usuario actual = usuarios[i];
 
-        if (cant > max) {
-            max = cant;
-            mejor = actual;
-        } else if (cant == max && mejor != null) {
-            // desempate por cedula menor
-            if (actual.getCedula().compareTo(mejor.getCedula()) < 0) {
+            if (cant > max) {
+                max = cant;
                 mejor = actual;
+            } else if (cant == max && mejor != null) {
+                // desempate por cedula menor
+                if (actual.getCedula().compareTo(mejor.getCedula()) < 0) {
+                    mejor = actual;
+                }
             }
         }
+
+        if (mejor == null) {
+            return Retorno.ok("");
+        }
+
+        return new Retorno(Retorno.Resultado.OK, mejor.getCedula());
     }
-
-    if (mejor == null) {
-        return Retorno.ok("");
-    }
-
-    return new Retorno(Retorno.Resultado.OK, mejor.getCedula());
-}
-
 
     public void agregarEstacion(Estacion e) {
         listaEstaciones.agregarOrdenado(e);
@@ -752,8 +774,8 @@ public Retorno usuarioMayor() {
     public void agregarAlquiler(Alquiler a) {
         pilaRetiros.apilar(a);
     }
-    
-        public Bicicleta buscarBiciPorCodigo(String codigo) {
+
+    public Bicicleta buscarBiciPorCodigo(String codigo) {
         Bicicleta b = new Bicicleta(codigo, "biciAux");
 
         if (listaBicicletas.existeElemento(b)) {

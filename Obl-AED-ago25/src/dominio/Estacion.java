@@ -191,5 +191,33 @@ public class Estacion implements Comparable<Estacion> {
     public void quitarUsuarioEnEspera() {
     usuariosEnEspera.desencolar();
 }
+    
+    
+    public String usuariosEnEspera() {
+        String stringRet = "";
+
+        int cantUsuarios = this.usuariosEnEspera.cantElementos();
+
+        if (cantUsuarios == 0) {
+            return "No hay usuarios en espera";
+
+        } else {
+            Cola<Usuario> colaAux = new Cola();
+
+            for (int i = 0; i < cantUsuarios; i++) {
+                Usuario aux = usuariosEnEspera.frente();
+                colaAux.encolar(aux);
+                stringRet += aux.getNombre() + "|";
+                usuariosEnEspera.desencolar();
+            }
+
+            for (int i = 0; i < cantUsuarios; i++) {
+                Usuario aux2 = colaAux.frente();
+                usuariosEnEspera.encolar(aux2);
+            }
+        }
+
+        return stringRet;
+    }
 
 }

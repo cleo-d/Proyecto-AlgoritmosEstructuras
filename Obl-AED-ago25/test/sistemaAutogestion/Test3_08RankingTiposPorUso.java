@@ -37,18 +37,16 @@ public class Test3_08RankingTiposPorUso {
         // Alquilar múltiples veces para generar ranking
         // 2 URBANAS
         s.alquilarBicicleta("11111111", "E1");
-        s.devolverBicicleta("11111111", "E1");
-
         s.alquilarBicicleta("22222222", "E1");
-        s.devolverBicicleta("22222222", "E1");
+        
 
         // 1 MOUNTAIN
         s.alquilarBicicleta("33333333", "E1");
-        s.devolverBicicleta("33333333", "E1");
+       
 
         // 1 ELECTRICA
         s.alquilarBicicleta("44444444", "E1");
-        s.devolverBicicleta("44444444", "E1");
+       
     }
 
     @Test
@@ -56,6 +54,8 @@ public class Test3_08RankingTiposPorUso {
 
         retorno = s.rankingTiposPorUso();
 
+         System.out.println("RESULTADO RANKING OK = " + retorno.getValorString());
+         
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
         assertEquals("URBANA#2|MOUNTAIN#1|ELECTRICA#1", retorno.getValorString());
     }
@@ -66,6 +66,8 @@ public class Test3_08RankingTiposPorUso {
         sis.crearSistemaDeGestion();
 
         retorno = sis.rankingTiposPorUso();
+        
+        System.out.println("RESULTADO RANKING VACIO = " + retorno.getValorString());
 
         assertEquals(Retorno.Resultado.OK, retorno.getResultado());
         assertEquals("", retorno.getValorString());
